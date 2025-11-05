@@ -2,8 +2,8 @@
 
 A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization.
 
-[![CI Status](https://github.com/liatrio/open-source-template/actions/workflows/ci.yml/badge.svg)](https://github.com/liatrio/open-source-template/actions/workflows/ci.yml)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/liatrio/open-source-template/blob/main/LICENSE)
+[![CI Status](https://github.com/liatrio-labs/open-source-project-template/actions/workflows/ci.yml/badge.svg)](https://github.com/liatrio-labs/open-source-project-template/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/liatrio-labs/open-source-project-template/blob/main/LICENSE)
 
 ## Why Use This Template?
 
@@ -22,7 +22,7 @@ This template provides Liatrio teams with a proven foundation for new projects, 
 Click the **"Use this template"** button at the top of this repository, or use the GitHub CLI:
 
 ```bash
-gh repo create my-new-project --template liatrio/open-source-template --public
+gh repo create my-new-project --template liatrio-labs/open-source-project-template --public
 cd my-new-project
 ```
 
