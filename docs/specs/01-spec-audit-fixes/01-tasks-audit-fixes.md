@@ -24,21 +24,21 @@
   - [x] 1.3 Update contact link URLs in `.github/ISSUE_TEMPLATE/config.yml` (lines 4 and 7) from `liatrio/open-source-template` to `liatrio-labs/open-source-project-template`
   - [x] 1.4 Verify CHANGELOG.md already contains correct repository references (validate only, no changes needed)
   - [x] 1.5 Run verification command: `grep -r 'liatrio/open-source-template' . --exclude-dir=tasks` and confirm zero matches
-- [ ] 2.0 Document GitHub Action Version Strategy
+- [x] 2.0 Document GitHub Action Version Strategy
   - Demo Criteria: "New `docs/github-actions.md` file exists explaining why `sst/opencode/github@latest` uses `@latest`, includes monitoring guidance, and explains when to pin versions vs. use `@latest`; workflow file comment references the documentation file"
   - Proof Artifact(s): "File: `docs/github-actions.md` with complete documentation; Updated comment in `.github/workflows/opencode-gpt-5-codex.yml` referencing `docs/github-actions.md`"
-  - [ ] 2.1 Create new file `docs/github-actions.md` with documentation explaining GitHub Actions version strategy
-  - [ ] 2.2 Document rationale for using `@latest` for `sst/opencode/github` action (rapid development, frequent updates)
-  - [ ] 2.3 Add monitoring guidance section explaining how to track `@latest` action updates and identify stable versions
-  - [ ] 2.4 Add section explaining when to pin versions vs. use `@latest` (security considerations, stability needs)
-  - [ ] 2.5 Update inline comment in `.github/workflows/opencode-gpt-5-codex.yml` (line 50) to reference `docs/github-actions.md` instead of inline explanation
-- [ ] 3.0 Add Repository Metadata Documentation and Validate Settings Script
+  - [x] 2.1 Create new file `docs/github-actions.md` with documentation explaining GitHub Actions version strategy
+  - [x] 2.2 Document rationale for using `@latest` for `sst/opencode/github` action (rapid development, frequent updates)
+  - [x] 2.3 Add monitoring guidance section explaining how to track `@latest` action updates and identify stable versions
+  - [x] 2.4 Add section explaining when to pin versions vs. use `@latest` (security considerations, stability needs)
+  - [x] 2.5 Update inline comment in `.github/workflows/opencode-gpt-5-codex.yml` (line 50) to reference `docs/github-actions.md` instead of inline explanation
+- [x] 3.0 Add Repository Metadata Documentation and Validate Settings Script
   - Demo Criteria: "`docs/repository-settings.md` includes section with recommended repository description and topics; documentation includes manual configuration instructions for metadata; script validation confirms `scripts/apply-repo-settings.sh` correctly handles branch protection and `delete_branch_on_merge` setting"
   - Proof Artifact(s): "Updated `docs/repository-settings.md` with metadata section including recommended description: 'A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization' and topics: `automation`, `ci-cd`, `devops`, `github-actions`, `github-template`, `developer-tools`, `liatrio`, `pre-commit`, `semantic-release`; Script validation notes confirming branch protection and delete_branch_on_merge functionality"
-  - [ ] 3.1 Add new "Repository Metadata" section to `docs/repository-settings.md` with recommended repository description: "A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization"
-  - [ ] 3.2 Add recommended repository topics list: `automation`, `ci-cd`, `devops`, `github-actions`, `github-template`, `developer-tools`, `liatrio`, `pre-commit`, `semantic-release`
-  - [ ] 3.3 Add manual configuration instructions for setting repository description via GitHub UI and `gh` CLI
-  - [ ] 3.4 Add manual configuration instructions for setting repository topics via GitHub UI and `gh` CLI
-  - [ ] 3.5 Note that repository metadata configuration is manual-only (no script automation) with brief explanation
-  - [ ] 3.6 Validate `scripts/apply-repo-settings.sh` correctly implements branch protection (verify `apply_branch_protection` function uses correct GitHub API endpoint and JSON payload structure)
-  - [ ] 3.7 Validate `scripts/apply-repo-settings.sh` correctly sets `delete_branch_on_merge=true` (verify `apply_general_settings` function includes this parameter in API call on line 87)
+  - [x] 3.1 Add new "Repository Metadata" section to `docs/repository-settings.md` with recommended repository description: "A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization"
+  - [x] 3.2 Add recommended repository topics list: `automation`, `ci-cd`, `devops`, `github-actions`, `github-template`, `developer-tools`, `liatrio`, `pre-commit`, `semantic-release`
+  - [x] 3.3 Add manual configuration instructions for setting repository description via GitHub UI and `gh` CLI
+  - [x] 3.4 Add manual configuration instructions for setting repository topics via GitHub UI and `gh` CLI
+  - [x] 3.5 Note that repository metadata configuration is manual-only (no script automation) with brief explanation
+  - [x] 3.6 Validate `scripts/apply-repo-settings.sh` correctly implements branch protection (verify `apply_branch_protection` function uses correct GitHub API endpoint and JSON payload structure)
+  - [x] 3.7 Validate `scripts/apply-repo-settings.sh` correctly sets `delete_branch_on_merge=true` (verify `apply_general_settings` function includes this parameter in API call on line 87)

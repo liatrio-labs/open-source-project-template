@@ -286,9 +286,120 @@ gh api -X DELETE repos/{owner}/{repo}/branches/main/protection
 - Status check names must match exactly (case-sensitive)
 - Wait for CI to complete before adding as required check
 
+## Repository Metadata
+
+Repository metadata includes the description and topics that help users discover and understand your repository's purpose. These settings improve discoverability and provide context about the repository's functionality.
+
+### Recommended Repository Description
+
+**Description**: "A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization"
+
+This description clearly communicates:
+
+- The repository is a template
+- It provides developer experience tooling
+- It includes quality gates and CI/CD automation
+- It's ready for customization
+
+### Recommended Repository Topics
+
+Recommended topics for this template repository:
+
+- `automation` - Highlights automated workflows and processes
+- `ci-cd` - Indicates continuous integration and deployment capabilities
+- `devops` - Identifies DevOps tooling and practices
+- `github-actions` - Shows GitHub Actions workflow integration
+- `github-template` - Marks this as a template repository
+- `developer-tools` - Categorizes developer productivity tools
+- `liatrio` - Organization-specific tag for Liatrio repositories
+- `pre-commit` - Indicates pre-commit hook integration
+- `semantic-release` - Shows semantic versioning automation
+
+### Manual Configuration
+
+Repository metadata (description and topics) must be configured manually. Unlike other repository settings, there is no automated script for these settings due to their infrequent change requirements and the need for manual review to ensure accuracy.
+
+#### Setting Repository Description
+
+**Via GitHub UI:**
+
+1. Navigate to your repository on GitHub
+2. Click **Settings** (gear icon) in the repository menu
+3. Scroll to the **"About"** section at the top of the settings page
+4. Enter the description in the "Description" field
+5. Click **Save changes** or the description will auto-save
+
+**Via GitHub CLI:**
+
+```bash
+# Replace {owner} and {repo} with your repository details
+# Replace {description} with the recommended description or your custom description
+
+gh api -X PATCH repos/{owner}/{repo} \
+  -F description="A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization"
+```
+
+**Example:**
+
+```bash
+gh api -X PATCH repos/liatrio-labs/open-source-project-template \
+  -F description="A battle-tested GitHub template repository with opinionated developer experience, quality gates, and CI/CD automation ready for customization"
+```
+
+#### Setting Repository Topics
+
+**Via GitHub UI:**
+
+1. Navigate to your repository on GitHub
+2. Click the **gear icon** (⚙️) next to "About" section on the repository homepage
+3. In the "Topics" field, enter each topic (one per line or comma-separated)
+4. Topics will appear as you type - select from suggestions or create new ones
+5. Click **Save changes**
+
+**Via GitHub CLI:**
+
+```bash
+# Replace {owner} and {repo} with your repository details
+# Replace {topics} with comma-separated list of topics
+
+gh api -X PUT repos/{owner}/{repo}/topics \
+  -H "Accept: application/vnd.github.mercy-preview+json" \
+  -f names="automation,ci-cd,devops,github-actions,github-template,developer-tools,liatrio,pre-commit,semantic-release"
+```
+
+**Example:**
+
+```bash
+gh api -X PUT repos/liatrio-labs/open-source-project-template/topics \
+  -H "Accept: application/vnd.github.mercy-preview+json" \
+  -f names="automation,ci-cd,devops,github-actions,github-template,developer-tools,liatrio,pre-commit,semantic-release"
+```
+
+**Verification:**
+
+```bash
+# Verify repository description
+gh api repos/{owner}/{repo} | jq '.description'
+
+# Verify repository topics
+gh api repos/{owner}/{repo}/topics | jq '.names'
+```
+
+### Why Manual Configuration?
+
+Repository metadata (description and topics) is configured manually rather than through automation because:
+
+1. **Infrequent Changes**: Repository description and topics rarely change after initial setup
+2. **Contextual Accuracy**: Manual review ensures the description and topics accurately reflect the repository's current state
+3. **Flexibility**: Different repositories may need different descriptions and topic selections
+4. **Simplicity**: Manual configuration via UI or CLI is straightforward and doesn't require script maintenance
+
+The `scripts/apply-repo-settings.sh` script focuses on settings that benefit from automation (general settings, branch protection) and excludes metadata configuration.
+
 ## Additional Resources
 
 - [GitHub REST API Documentation](https://docs.github.com/en/rest)
 - [Branch Protection Rules Documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)
 - [GitHub CLI Manual](https://cli.github.com/manual/)
 - [Repository Settings Best Practices](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features)
+- [About Your Repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-your-repository)
