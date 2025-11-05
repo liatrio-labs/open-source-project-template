@@ -21,8 +21,8 @@ The following settings were captured from `liatrio-labs/spec-driven-workflow` re
   "has_wiki": true,
   "has_discussions": false,
   "allow_squash_merge": true,
-  "allow_merge_commit": true,
-  "allow_rebase_merge": true,
+  "allow_merge_commit": false,
+  "allow_rebase_merge": false,
   "delete_branch_on_merge": false
 }
 ```
@@ -33,8 +33,8 @@ The following settings were captured from `liatrio-labs/spec-driven-workflow` re
 - **Wiki**: Enabled (for additional documentation)
 - **Discussions**: Disabled by default (enable if needed for community Q&A)
 - **Squash merge**: Enabled (recommended for clean history)
-- **Merge commits**: Enabled (preserves commit history when needed)
-- **Rebase merge**: Enabled (for linear history)
+- **Merge commits**: Disabled (enforces clean, linear history via squash merges only)
+- **Rebase merge**: Disabled (enforces clean, linear history via squash merges only)
 - **Delete branch on merge**: **Enabled** (recommended - keeps repository clean)
 
 ### Branch Protection
@@ -60,8 +60,8 @@ gh api -X PATCH repos/{owner}/{repo} \
   -F has_wiki=true \
   -F has_discussions=false \
   -F allow_squash_merge=true \
-  -F allow_merge_commit=true \
-  -F allow_rebase_merge=true \
+  -F allow_merge_commit=false \
+  -F allow_rebase_merge=false \
   -F delete_branch_on_merge=true
 ```
 
@@ -134,9 +134,8 @@ Under "Pull Requests" section:
 
 - ✓ **Allow squash merging**: Check (recommended)
   - Optionally: ✓ Default to pull request title and commit details
-- ✓ **Allow merge commits**: Check
-  - Optionally: ✓ Default to pull request title and description
-- ✓ **Allow rebase merging**: Check
+- ☐ **Allow merge commits**: Uncheck (enforces clean, linear history via squash merges only)
+- ☐ **Allow rebase merging**: Uncheck (enforces clean, linear history via squash merges only)
 - ✓ **Automatically delete head branches**: Check (recommended)
 
 #### Template Repository

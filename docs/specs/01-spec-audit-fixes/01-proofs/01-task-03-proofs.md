@@ -155,8 +155,8 @@ grep -A 12 "apply_general_settings()" scripts/apply-repo-settings.sh | grep -A 8
         -F has_wiki=true \
         -F has_discussions=false \
         -F allow_squash_merge=true \
-        -F allow_merge_commit=true \
-        -F allow_rebase_merge=true \
+        -F allow_merge_commit=false \
+        -F allow_rebase_merge=false \
         -F delete_branch_on_merge=true \
 ```
 

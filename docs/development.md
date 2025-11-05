@@ -220,8 +220,8 @@ gh api -X PATCH repos/{owner}/{repo} \
 # Merge settings
 gh api -X PATCH repos/{owner}/{repo} \
   -F allow_squash_merge=true \
-  -F allow_merge_commit=true \
-  -F allow_rebase_merge=true \
+  -F allow_merge_commit=false \
+  -F allow_rebase_merge=false \
   -F delete_branch_on_merge=true
 
 # Automatically delete head branches after PRs are merged
@@ -236,8 +236,8 @@ gh api -X PATCH repos/{owner}/{repo} \
 2. **Configure merge button**
    - Settings → General → Pull Requests
    - ✓ Allow squash merging (recommended for clean history)
-   - ✓ Allow merge commits (for preserving commit history)
-   - ✓ Allow rebase merging (for linear history)
+   - ☐ Allow merge commits (disabled - enforces clean, linear history via squash merges only)
+   - ☐ Allow rebase merging (disabled - enforces clean, linear history via squash merges only)
    - ✓ Automatically delete head branches
 
 3. **Set up CODEOWNERS** (optional)

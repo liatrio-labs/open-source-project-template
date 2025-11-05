@@ -82,8 +82,8 @@ apply_general_settings() {
         -F has_wiki=true \
         -F has_discussions=false \
         -F allow_squash_merge=true \
-        -F allow_merge_commit=true \
-        -F allow_rebase_merge=true \
+        -F allow_merge_commit=false \
+        -F allow_rebase_merge=false \
         -F delete_branch_on_merge=true \
         > /dev/null
 
