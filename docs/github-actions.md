@@ -4,11 +4,79 @@ This document explains the version management strategy for GitHub Actions used i
 
 ## Table of Contents
 
+- [Quick Reference](#quick-reference)
 - [Version Pinning Strategy](#version-pinning-strategy)
 - [Using `@latest` for Rapid Development Actions](#using-latest-for-rapid-development-actions)
 - [Monitoring `@latest` Actions](#monitoring-latest-actions)
 - [When to Pin Versions](#when-to-pin-versions)
 - [Version Update Process](#version-update-process)
+
+## Quick Reference
+
+### Common Scenarios
+
+#### Scenario 1: Adding a new GitHub Action to a workflow
+
+```yaml
+# ✅ RECOMMENDED: Pin to a stable version
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+
+# ⚠️ USE SPARINGLY: Only for rapidly evolving actions
+- uses: sst/opencode/github@latest  # See docs/github-actions.md for monitoring guidance
+```
+
+#### Scenario 2: Deciding whether to pin or use `@latest`
+
+- **Pin versions** when:
+  - Action is stable and mature (e.g., `actions/checkout@v4`)
+  - Workflow is critical for production
+  - Reproducibility is required
+  - Security-sensitive operations
+
+- **Use `@latest`** when:
+  - Action is rapidly evolving (e.g., `sst/opencode/github@latest`)
+  - You need latest features immediately
+  - Action is still in active early development
+  - You commit to active monitoring
+
+#### Scenario 3: Monitoring an `@latest` action
+
+```bash
+# Check current version
+gh api repos/sst/opencode/releases/latest | jq '.tag_name'
+
+# List recent releases
+gh api repos/sst/opencode/releases --paginate | jq '.[] | {tag_name, published_at, name}'
+```
+
+#### Scenario 4: Updating a pinned version
+
+1. Check release notes for breaking changes
+2. Test in a development environment
+3. Update workflow file: `@v4` → `@v5`
+4. Test workflow execution
+5. Commit and monitor first production run
+
+#### Scenario 5: Transitioning from `@latest` to pinned
+
+1. Monitor releases for a stable version
+2. Test the specific version in staging
+3. Update workflow: `@latest` → `@v1.2.3`
+4. Document the change and rationale
+
+### Quick Decision Tree
+
+```text
+New GitHub Action?
+├─ Is it stable and mature?
+│  └─ YES → Pin to specific version (e.g., @v4)
+│  └─ NO → Is it rapidly evolving?
+│     ├─ YES → Use @latest (with monitoring)
+│     └─ NO → Pin to specific version
+└─ Is it security-sensitive?
+   └─ YES → Always pin to specific version
+```
 
 ## Version Pinning Strategy
 
