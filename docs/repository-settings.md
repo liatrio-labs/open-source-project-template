@@ -146,15 +146,62 @@ If this repository is intended as a template:
 
 ### Branch Protection Rules
 
+GitHub offers two methods for branch protection: **Rulesets API** (recommended, modern) and **Classic Branch Protection** (legacy). This template uses Rulesets API for better flexibility and future-proofing.
+
+#### Using Rulesets API (Recommended)
+
+**Via GitHub UI:**
+
+1. Navigate to **Settings** → **Rules** → **Rulesets**
+2. Click **New ruleset** → Select **Branch ruleset**
+3. Configure the ruleset:
+   - **Name**: `main branch protection`
+   - **Target branches**: Select **Default branch** (`main`)
+   - **Enforcement**: **Active**
+
+4. **Configure Rules:**
+   - ✓ **Prevent deletions** - Prevents branch deletion
+   - ✓ **Prevent force pushes** - Prevents force pushes to protected branch
+   - ✓ **Require pull request before merging**
+     - **Required approvals**: 1
+     - ☐ **Dismiss stale reviews on push**: Unchecked (recommended approach)
+     - ✓ **Require last push approval**: Checked (ensures reviewers approve latest changes)
+     - ✓ **Require review thread resolution**: Checked (all review threads must be resolved)
+     - **Allowed merge methods**: Select **Squash** only
+   - ✓ **Require status checks to pass**
+     - ✓ **Require branches to be up to date**: Checked (strict policy)
+     - **Required status checks**: Add `Run Tests` and `Run Linting` (match your CI job names)
+   - ✓ **Require linear history** - Enforces clean, linear history
+
+5. **Configure Bypass List** (Important for CI/CD):
+   - Scroll to **Bypass list** section
+   - Click **Add actor**
+   - Add the following:
+     - **Repository role**: **Admins** (allows repository administrators to bypass)
+     - **Repository role**: **Maintainers** (allows repository maintainers to bypass)
+     - **GitHub App**: Search for **"Chainguard Octo-sts"** and add it
+       - **Why**: Allows semantic-release automation to bypass branch protection when creating releases
+       - **Note**: The integration ID is repository-specific and will be automatically configured when added via UI
+
+6. Click **Create ruleset** to save
+
+**Important Notes:**
+
+- The Chainguard Octo STS integration must be added to the bypass list if you're using semantic-release workflow (`.github/workflows/release.yml`)
+- Without this bypass, semantic-release will be blocked from pushing version bumps and CHANGELOG updates to the main branch
+- The integration ID is automatically discovered when adding via GitHub UI - no manual ID lookup needed
+
+#### Using Classic Branch Protection (Legacy)
+
+If you prefer the classic method:
+
 1. Navigate to **Settings** → **Branches**
 2. Under "Branch protection rules", click **Add rule** or **Add classic branch protection rule**
 3. Branch name pattern: `main`
 4. Configure the protection settings (see below)
 5. Click **Create** to save the branch protection rule
 
-#### Protection Settings
-
-**Protect matching branches:**
+**Protection Settings:**
 
 - ✓ **Require a pull request before merging**
   - ✓ **Require approvals**: 1
@@ -214,29 +261,43 @@ Repository-specific secrets (if needed):
 
 ### Recommended Configuration
 
-The following branch protection configuration is recommended for all production projects:
+The following branch protection configuration is recommended for all production projects. This template uses **Rulesets API** (modern approach) rather than Classic Branch Protection.
 
 #### Required Status Checks
 
 - **Require status checks to pass**: Yes
 - **Require branches to be up to date**: Yes
 - **Status checks**:
-  - `test` (from CI workflow)
-  - `lint` (from CI workflow)
+  - `Run Tests` (from CI workflow)
+  - `Run Linting` (from CI workflow)
 
 #### Pull Request Reviews
 
 - **Require approvals**: 1 minimum
-- **Dismiss stale reviews**: Yes
+- **Dismiss stale reviews on push**: No (recommended approach)
+- **Require last push approval**: Yes (ensures reviewers approve latest changes)
+- **Required review thread resolution**: Yes (all review threads must be resolved)
 - **Require review from Code Owners**: Optional (if CODEOWNERS file exists)
 
 #### Additional Rules
 
 - **Require conversation resolution**: Yes
 - **Require signed commits**: Optional (recommended for compliance)
-- **Require linear history**: Optional (enforces clean history)
+- **Require linear history**: Yes (enforces clean, linear history)
+- **Allowed merge methods**: Squash only (enforced in ruleset)
 - **Allow force pushes**: No
 - **Allow deletions**: No
+
+#### Bypass Configuration
+
+The following actors should be configured to bypass branch protection rules:
+
+- **Repository Admins**: Can bypass all rules (standard GitHub role ID: 2)
+- **Repository Maintainers**: Can bypass all rules (standard GitHub role ID: 5)
+- **Chainguard Octo STS Integration**: Can bypass rules for semantic-release automation
+  - **Why**: Allows semantic-release workflow to push version bumps and CHANGELOG updates
+  - **How to add**: Via GitHub UI - search for "Chainguard Octo-sts" in the bypass list (see [Manual Configuration](#using-rulesets-api-recommended) section above for detailed steps)
+  - **Required if**: Using semantic-release workflow (`.github/workflows/release.yml`)
 
 ### Testing Branch Protection
 
@@ -250,6 +311,33 @@ Before applying to production, test branch protection rules:
    - Merge is blocked until CI passes
    - At least one approval is required
    - Branch must be up to date before merging
+   - Review threads must be resolved before merging
+   - Only squash merge is allowed
+
+### Verifying Bypass Configuration
+
+After setting up branch protection, verify that Chainguard Octo STS is configured in the bypass list:
+
+**Via GitHub UI:**
+
+1. Navigate to **Settings** → **Rules** → **Rulesets**
+2. Click on your branch protection ruleset
+3. Scroll to **Bypass list** section
+4. Verify **Chainguard Octo-sts** appears in the list
+
+**Via GitHub CLI:**
+
+```bash
+# Replace {owner} and {repo} with your repository details
+gh api repos/{owner}/{repo}/rulesets --jq '.[] | select(.target == "branch") | {name, bypass_actors: [.bypass_actors[] | {actor_type, actor_id}]}'
+```
+
+If Chainguard Octo STS is missing and you're using semantic-release, add it:
+
+1. Edit the ruleset
+2. Scroll to **Bypass list**
+3. Click **Add actor** → **GitHub App**
+4. Search for **"Chainguard Octo-sts"** and add it
 
 ## Troubleshooting
 
