@@ -67,30 +67,32 @@ gh api -X PATCH repos/{owner}/{repo} \
 
 ### Apply Branch Protection Rules
 
-```bash
-# Enable branch protection on main branch
-# This ensures code quality and prevents accidental force pushes
+The recommended way to apply branch protection is using the provided script, which uses the Rulesets API:
 
-gh api -X PUT repos/{owner}/{repo}/branches/main/protection \
-  --input - <<'EOF'
-{
-  "required_status_checks": {
-    "strict": true,
-    "contexts": ["test", "lint"]
-  },
-  "enforce_admins": false,
-  "required_pull_request_reviews": {
-    "dismissal_restrictions": {},
-    "dismiss_stale_reviews": true,
-    "require_code_owner_reviews": false,
-    "required_approving_review_count": 1
-  },
-  "restrictions": null,
-  "allow_force_pushes": false,
-  "allow_deletions": false,
-  "required_conversation_resolution": true
-}
-EOF
+```bash
+# Apply branch protection using the automation script
+./scripts/apply-repo-settings.sh {owner}/{repo}
+
+# Or with dry-run to preview changes
+./scripts/apply-repo-settings.sh {owner}/{repo} --dry-run
+```
+
+The script uses `scripts/ruleset-config.json` for the Rulesets API configuration. You can customize this file if needed, but the default configuration includes:
+
+- Required status checks: `Run Tests`, `Run Linting`
+- Required approvals: 1 minimum
+- Required linear history
+- Squash merge only
+- Bypass actors: Admins and Maintainers
+
+**Note:** If using semantic-release, you'll need to manually add Chainguard Octo STS integration to the bypass list via GitHub UI (see [Manual Configuration](#using-rulesets-api-recommended) section).
+
+**Manual API approach** (if you prefer not to use the script):
+
+```bash
+# Create branch protection ruleset using Rulesets API
+gh api -X POST repos/{owner}/{repo}/rulesets \
+  --input scripts/ruleset-config.json
 ```
 
 ### Verify Settings
@@ -107,8 +109,8 @@ gh api repos/{owner}/{repo} | jq '{
   delete_branch_on_merge
 }'
 
-# Fetch branch protection settings
-gh api repos/{owner}/{repo}/branches/main/protection | jq .
+# Fetch branch protection ruleset settings
+gh api repos/{owner}/{repo}/rulesets --jq '.[] | select(.target == "branch") | {id, name, enforcement, rules: [.rules[] | .type]}'
 ```
 
 ## Manual Configuration
@@ -481,7 +483,7 @@ Repository metadata (description and topics) is configured manually rather than 
 3. **Flexibility**: Different repositories may need different descriptions and topic selections
 4. **Simplicity**: Manual configuration via UI or CLI is straightforward and doesn't require script maintenance
 
-The `scripts/apply-repo-settings.sh` script focuses on settings that benefit from automation (general settings, branch protection) and excludes metadata configuration.
+The `scripts/apply-repo-settings.sh` script focuses on settings that benefit from automation (general settings, branch protection) and excludes metadata configuration. The script uses `scripts/ruleset-config.json` for branch protection configuration, which can be customized if needed.
 
 ## Additional Resources
 

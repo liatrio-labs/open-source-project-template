@@ -2,6 +2,9 @@
 #
 # Apply recommended repository settings via GitHub CLI (gh)
 #
+# This script uses GitHub Rulesets API for branch protection (modern approach)
+# rather than Classic Branch Protection API.
+#
 # Usage:
 #   ./scripts/apply-repo-settings.sh [owner/repo] [--dry-run]
 #
@@ -169,61 +172,74 @@ apply_general_settings() {
     info "✓ General settings applied successfully"
 }
 
-# Apply branch protection rules
+# Apply branch protection rules using Rulesets API
 apply_branch_protection() {
     local repo=$1
-    info "Applying branch protection rules to $repo (main branch)..."
+    info "Applying branch protection ruleset to $repo (main branch)..."
 
-    # Check if protection already exists
-    local protection_exists=false
-    if gh api "repos/$repo/branches/main/protection" &> /dev/null; then
-        protection_exists=true
-        warn "Branch protection already exists. Updating..."
+    # Check if ruleset already exists
+    local ruleset_exists=false
+    local existing_ruleset_id=""
+    existing_ruleset_id=$(gh api "repos/$repo/rulesets" --jq '.[] | select(.target == "branch" and .enforcement == "active") | .id' 2>/dev/null | head -1 || echo "")
+
+    if [ -n "$existing_ruleset_id" ]; then
+        ruleset_exists=true
+        warn "Branch protection ruleset already exists (ID: $existing_ruleset_id). Updating..."
     fi
 
     if [ "$DRY_RUN" = true ]; then
-        warn "[DRY RUN] Would apply the following branch protection rules:"
-        echo "  - Required status checks: test, lint"
-        echo "  - Require branches to be up to date: true"
+        warn "[DRY RUN] Would apply the following branch protection ruleset:"
+        echo "  - Required status checks: Run Tests, Run Linting"
+        echo "  - Require branches to be up to date: true (strict policy)"
         echo "  - Required approving review count: 1"
-        echo "  - Dismiss stale reviews: true"
-        echo "  - Require conversation resolution: true"
-        echo "  - Allow force pushes: false"
-        echo "  - Allow deletions: false"
-        if [ "$protection_exists" = true ]; then
-            warn "[DRY RUN] Existing protection would be updated"
+        echo "  - Dismiss stale reviews on push: false (recommended approach)"
+        echo "  - Require last push approval: true"
+        echo "  - Required review thread resolution: true"
+        echo "  - Allowed merge methods: squash only"
+        echo "  - Required linear history: true"
+        echo "  - Prevent force pushes: true"
+        echo "  - Prevent deletions: true"
+        echo "  - Bypass actors: Admins, Maintainers"
+        echo "  - Note: Chainguard Octo STS integration bypass must be added manually via GitHub UI"
+        if [ "$ruleset_exists" = true ]; then
+            warn "[DRY RUN] Existing ruleset would be updated"
         else
-            warn "[DRY RUN] New protection would be created"
+            warn "[DRY RUN] New ruleset would be created"
         fi
         return 0
     fi
 
-    # Apply protection rules
-    if ! gh api -X PUT "repos/$repo/branches/main/protection" \
-        --input - > /dev/null 2>&1 <<'EOF'
-{
-  "required_status_checks": {
-    "strict": true,
-    "contexts": ["test", "lint"]
-  },
-  "enforce_admins": false,
-  "required_pull_request_reviews": {
-    "dismissal_restrictions": {},
-    "dismiss_stale_reviews": true,
-    "require_code_owner_reviews": false,
-    "required_approving_review_count": 1
-  },
-  "restrictions": null,
-  "allow_force_pushes": false,
-  "allow_deletions": false,
-  "required_conversation_resolution": true
-}
-EOF
-    then
-        handle_api_error "apply branch protection rules"
+    # Get script directory to locate ruleset config file
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local ruleset_config_file="${script_dir}/ruleset-config.json"
+
+    # Verify ruleset config file exists
+    if [ ! -f "$ruleset_config_file" ]; then
+        error "Ruleset configuration file not found: $ruleset_config_file"
     fi
 
-    info "✓ Branch protection rules applied successfully"
+    # Apply ruleset (create or update)
+    if [ "$ruleset_exists" = true ]; then
+        # Update existing ruleset
+        if ! gh api -X PUT "repos/$repo/rulesets/$existing_ruleset_id" \
+            --input "$ruleset_config_file" > /dev/null 2>&1; then
+            handle_api_error "update branch protection ruleset"
+        fi
+        info "✓ Branch protection ruleset updated successfully"
+    else
+        # Create new ruleset
+        local ruleset_output
+        ruleset_output=$(gh api -X POST "repos/$repo/rulesets" \
+            --input "$ruleset_config_file") || handle_api_error "create branch protection ruleset"
+
+        local ruleset_id
+        ruleset_id=$(echo "$ruleset_output" | jq -r '.id')
+        info "✓ Branch protection ruleset created successfully (ID: $ruleset_id)"
+    fi
+
+    warn "Note: If using semantic-release, add Chainguard Octo STS integration to bypass list via GitHub UI"
+    warn "See docs/repository-settings.md for instructions"
 }
 
 # Verify settings
@@ -244,16 +260,27 @@ verify_settings() {
     }'
 
     echo ""
-    echo "Branch Protection (main):"
-    if gh api "repos/$repo/branches/main/protection" &> /dev/null; then
-        gh api "repos/$repo/branches/main/protection" | jq '{
-            required_status_checks: .required_status_checks.contexts,
-            required_approving_review_count: .required_pull_request_reviews.required_approving_review_count,
-            dismiss_stale_reviews: .required_pull_request_reviews.dismiss_stale_reviews,
-            required_conversation_resolution: .required_conversation_resolution
+    echo "Branch Protection Ruleset:"
+    local ruleset_id
+    ruleset_id=$(gh api "repos/$repo/rulesets" --jq '.[] | select(.target == "branch" and .enforcement == "active") | .id' 2>/dev/null | head -1 || echo "")
+    if [ -n "$ruleset_id" ]; then
+        gh api "repos/$repo/rulesets/$ruleset_id" | jq '{
+            id,
+            name,
+            enforcement,
+            target,
+            rules: [.rules[] | .type],
+            bypass_actors: [.bypass_actors[] | {actor_type, actor_id}],
+            status_checks: ([.rules[] | select(.type == "required_status_checks") | .parameters.required_status_checks[].context] // []),
+            pr_rules: ([.rules[] | select(.type == "pull_request") | .parameters | {
+                required_approvals: .required_approving_review_count,
+                dismiss_stale: .dismiss_stale_reviews_on_push,
+                require_last_push: .require_last_push_approval,
+                merge_methods: .allowed_merge_methods
+            }] // [])
         }'
     else
-        warn "Branch protection not configured"
+        warn "Branch protection ruleset not configured"
     fi
 }
 

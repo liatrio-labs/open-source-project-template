@@ -248,43 +248,52 @@ gh api -X PATCH repos/{owner}/{repo} \
 
 ### Recommended Protection for `main` Branch
 
-Apply these settings via GitHub UI (Settings → Branches → Add rule) or gh CLI:
+Apply these settings via GitHub UI (Settings → Rules → Rulesets) or use the automation script:
 
 ```bash
-# Enable branch protection
-gh api -X PUT repos/{owner}/{repo}/branches/main/protection \
-  -F required_status_checks[strict]=true \
-  -F required_status_checks[contexts][]=test \
-  -F required_status_checks[contexts][]=lint \
-  -F enforce_admins=false \
-  -F required_pull_request_reviews[dismiss_stale_reviews]=true \
-  -F required_pull_request_reviews[require_code_owner_reviews]=false \
-  -F required_pull_request_reviews[required_approving_review_count]=1 \
-  -F restrictions=null
+# Apply branch protection using the automation script (recommended)
+./scripts/apply-repo-settings.sh {owner}/{repo}
+
+# The script uses scripts/ruleset-config.json for configuration
+# See docs/repository-settings.md for detailed instructions
+```
+
+For manual configuration via GitHub CLI using Rulesets API:
+
+```bash
+# Create branch protection ruleset
+gh api -X POST repos/{owner}/{repo}/rulesets \
+  --input scripts/ruleset-config.json
 ```
 
 ### Protection Rules Breakdown
 
 - **Require pull request before merging**: All changes must go through PR
-- **Require approvals**: 1 approving review required
-- **Dismiss stale reviews**: New commits dismiss previous approvals
-- **Require status checks**: CI must pass (test + lint jobs)
-- **Require branches to be up to date**: Enforce linear history
-- **Do not allow bypassing**: Enforce rules for everyone (optional)
+- **Required approvals**: 1 approving review required
+- **Dismiss stale reviews on push**: No (recommended approach - reviews persist if reviewer approves latest changes)
+- **Require last push approval**: Yes (ensures reviewers approve latest changes)
+- **Required review thread resolution**: Yes (all review threads must be resolved)
+- **Require status checks**: CI must pass (`Run Tests` + `Run Linting` jobs)
+- **Require branches to be up to date**: Yes (strict policy - enforces linear history)
+- **Required linear history**: Yes (enforces clean, linear history)
+- **Allowed merge methods**: Squash only (enforced in ruleset)
+- **Bypass actors**: Admins and Maintainers can bypass rules
+
+**Note:** The configuration is defined in `scripts/ruleset-config.json`. Customize this file if you need different settings.
 
 ### Manual Configuration Steps
 
-1. Go to Settings → Branches → Add rule
-2. Branch name pattern: `main`
-3. Enable:
-   - ✓ Require a pull request before merging
-     - ✓ Require approvals: 1
-     - ✓ Dismiss stale pull request approvals when new commits are pushed
-   - ✓ Require status checks to pass before merging
-     - ✓ Require branches to be up to date before merging
-     - Search and add: `test`, `lint` (your CI job names)
-   - ✓ Require conversation resolution before merging
-4. Save changes
+1. Go to Settings → Rules → Rulesets
+2. Click **New ruleset** → Select **Branch ruleset**
+3. Configure the ruleset (see `scripts/ruleset-config.json` for reference):
+   - **Name**: `main branch protection`
+   - **Target branches**: Select **Default branch** (`main`)
+   - **Enforcement**: **Active**
+   - Configure rules: deletion protection, force push protection, PR requirements, status checks, linear history
+   - Add bypass actors: Admins, Maintainers (and Chainguard Octo STS if using semantic-release)
+4. Click **Create ruleset** to save
+
+See `docs/repository-settings.md` for detailed step-by-step instructions.
 
 ## Project-Specific Customizations
 
