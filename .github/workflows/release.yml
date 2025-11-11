@@ -69,33 +69,31 @@ jobs:
       # - Rust: cargo build --release
       # - Java: mvn package or gradle build
 
-      - name: Setup Node.js (for semantic-release)
-        uses: actions/setup-node@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          node-version: 'lts/*'
+          python-version: "3.12"
 
-      - name: Install semantic-release
-        run: |
-          npm install -g \
-            semantic-release@24 \
-            @semantic-release/changelog@6 \
-            @semantic-release/git@10 \
-            @semantic-release/github@11 \
-            conventional-changelog-conventionalcommits@8
+      - name: Install python-semantic-release
+        run: pip install python-semantic-release
+
+      - name: Semantic Release
+        run: semantic-release version -c .releaserc.toml
+        env:
+          GH_TOKEN: ${{ steps.octo-sts.outputs.token }}
 
       # NOTE: This template starts at v0.1.0 for demonstration purposes.
       # When creating your project from this template:
       # 1. Delete any existing tags: git tag -d $(git tag -l)
       # 2. Remove CHANGELOG.md if it exists
       # 3. Your first release will start at v1.0.0 (or the version determined by your first commit types)
-      # 4. Customize the .releaserc.json configuration file for your project needs
+      # 4. Customize the [semantic_release] section in .releaserc.toml for your project needs
+      #    - See .releaserc.toml for examples of build_command configuration (Python/uv, Node.js, Go, Rust)
+      #    - The build_command runs during versioning to build your project artifacts
 
-      - name: Run semantic-release
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ steps.octo-sts.outputs.token }}
+      # NOTE: Build commands should be configured in .releaserc.toml (build_command), not here
 
-      # TODO: Add language-specific release/publish steps here if needed
+      # CUSTOMIZE: Add language-specific release/publish steps here if needed (AFTER versioning completes)
       # Examples:
       # - Node.js: npm publish (requires NPM_TOKEN secret)
       # - Python: python -m twine upload dist/* (requires PYPI_TOKEN secret)
