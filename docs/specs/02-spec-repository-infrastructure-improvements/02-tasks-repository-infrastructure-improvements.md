@@ -32,13 +32,13 @@
   - [x] 1.3 Run markdownlint on SECURITY.md to ensure proper formatting
   - [x] 1.4 Verify both files are accessible and properly formatted using CLI commands
 
-- [ ] 2.0 Create Renovate Bot Configuration
+- [x] 2.0 Create Renovate Bot Configuration
   - Demo Criteria: Renovate Bot configuration file exists at `.github/renovate.json` with conservative settings (no auto-merge, PRs for all updates); configuration extends `config:recommended`; documentation added explaining Renovate setup and configuration approach
   - Proof Artifact(s): File: `.github/renovate.json` with conservative configuration; File: Documentation section explaining Renovate setup; File: `docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md` with research findings (already exists); CLI: `cat .github/renovate.json` shows conservative settings
-  - [ ] 2.1 Create `.github/renovate.json` with conservative configuration extending `config:recommended`, including: `automerge: false`, rate limits (`prHourlyLimit: 2`, `prConcurrentLimit: 10`), scheduling, dependency dashboard, and maintainer team reviewers/assignees based on research document
-  - [ ] 2.2 Add Renovate Bot documentation section to `README.md` explaining installation, configuration approach, and reference to research document
-  - [ ] 2.3 Update "Required GitHub Secrets" section in README.md if Renovate requires any secrets (note: Renovate uses GitHub App, no secrets needed)
-  - [ ] 2.4 Verify JSON syntax and configuration using CLI: `cat .github/renovate.json`
+  - [x] 2.1 Create `.github/renovate.json` with conservative configuration extending `config:recommended`, including: `automerge: false`, rate limits (`prHourlyLimit: 2`, `prConcurrentLimit: 10`), scheduling, dependency dashboard, and maintainer team reviewers/assignees based on research document
+  - [x] 2.2 Add Renovate Bot documentation section to `README.md` explaining installation, configuration approach, and reference to research document
+  - [x] 2.3 Update "Required GitHub Secrets" section in README.md if Renovate requires any secrets (note: Renovate uses GitHub App, no secrets needed)
+  - [x] 2.4 Verify JSON syntax and configuration using CLI: `cat .github/renovate.json`
 
 - [ ] 3.0 Create Cursor Agent Workflow Integration
   - Demo Criteria: Workflow file `.github/workflows/cursor.yml` exists following pattern of `claude.yml` and `opencode-gpt-5-codex.yml`; workflow triggers on `issue_comment`, `pull_request_review_comment`, `issues`, and `pull_request_review` events; workflow checks for `@cursor` mention in comment body and validates author association (OWNER, MEMBER, COLLABORATOR); workflow installs Cursor CLI and runs `cursor-agent` command; documentation added explaining Cursor agent usage, secrets setup, and command triggers
