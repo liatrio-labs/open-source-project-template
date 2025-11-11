@@ -1,5 +1,22 @@
 # 02-spec-repository-infrastructure-improvements.md
 
+## Implementation Status
+
+**Completed Work:**
+
+- ✅ **Renovate Bot Research**: Research document completed at `docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md` with configuration recommendations and file location determination (`.github/renovate.json`)
+- ✅ **Template Audit Manual Prompt**: AI prompt completed at `prompts/repository-template-audit.md` with comprehensive audit workflow following prompt engineering patterns
+- ✅ **Cursor Agent Research**: Trigger pattern and implementation approach determined (`@cursor` pattern, same event structure as Claude/OpenCode, Cursor CLI installation via curl script)
+
+**Remaining Work:**
+
+- ⏳ Renovate Bot configuration file creation (`.github/renovate.json`)
+- ⏳ SECURITY.md file creation
+- ⏳ CODEOWNERS file creation
+- ⏳ Cursor agent workflow integration
+- ⏳ Template audit CI workflow
+- ⏳ SDD workflow documentation
+
 ## Introduction/Overview
 
 This specification enhances the open-source template repository with essential infrastructure improvements, security documentation, automated dependency management, code ownership controls, AI workflow integration, and template audit capabilities. These enhancements will improve the template's usefulness, security posture, and maintainability for Liatrio teams creating new repositories from this template. The improvements follow established patterns from existing Liatrio repositories and industry best practices.
@@ -62,17 +79,17 @@ This specification enhances the open-source template repository with essential i
 **Purpose:** Enable automated dependency management with conservative settings that maintain human oversight
 **Demo Criteria:**
 
-- Renovate Bot configuration file exists (e.g., `renovate.json` or `.github/renovate.json`)
+- Renovate Bot configuration file exists at `.github/renovate.json` (per research findings)
 - Configuration uses conservative settings: no auto-merge, PRs for all updates
 - Documentation added explaining Renovate setup and configuration approach
-- Research findings included for review (comparing with other Liatrio repos)
+- Research findings documented comparing with other Liatrio repos
 
 **Proof Artifacts:**
 
-- File: Configuration file (location TBD based on research)
+- File: `.github/renovate.json` with conservative configuration
 - File: Documentation section explaining Renovate setup
-- File: Research notes comparing with other Liatrio repositories
-- CLI: `cat renovate.json` (or appropriate config file) shows conservative settings
+- File: `docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md` with research findings
+- CLI: `cat .github/renovate.json` shows conservative settings
 
 ### [Unit 3]: Cursor Agent Workflow Integration
 
@@ -80,33 +97,37 @@ This specification enhances the open-source template repository with essential i
 **Demo Criteria:**
 
 - Workflow file `.github/workflows/cursor.yml` exists following pattern of `claude.yml` and `opencode-gpt-5-codex.yml`
+- Workflow triggers on `issue_comment`, `pull_request_review_comment`, `issues`, and `pull_request_review` events
+- Workflow checks for `@cursor` mention in comment body (matches official Cursor GitHub integration pattern)
+- Workflow validates author association (OWNER, MEMBER, COLLABORATOR) for security
+- Workflow installs Cursor CLI and runs `cursor-agent` command
 - Documentation added explaining Cursor agent usage, secrets setup, and command triggers
-- Workflow responds to appropriate triggers (issues, PRs, comments) similar to existing AI workflows
-- Guide provided for additional secrets setup requirements
+- Guide provided for setting up `CURSOR_API_KEY` secret
 
 **Proof Artifacts:**
 
-- File: `.github/workflows/cursor.yml` with proper configuration
+- File: `.github/workflows/cursor.yml` with proper configuration matching Claude/OpenCode patterns
 - File: Documentation section explaining Cursor agent setup and usage
 - URL: GitHub Actions tab shows cursor workflow available
-- Documentation: Guide for setting up `CURSOR_API_KEY` or equivalent secret
+- Documentation: Guide for setting up `CURSOR_API_KEY` secret
+- Test: Comment `@cursor help` on a PR or issue triggers the workflow
 
 ### [Unit 4]: Template Audit Automation
 
 **Purpose:** Provide both automated and manual tools for auditing downstream repositories against the template
 **Demo Criteria:**
 
-- CI workflow exists for periodic template audits that can open PRs with necessary changes
-- Manual script/prompt exists for on-demand repository audits
+- CI workflow exists with monthly schedule and `workflow_dispatch` trigger for on-demand execution
+- CI audit performs comprehensive checks: file presence and content differences
+- Manual AI prompt exists for on-demand repository audits
 - AI prompt created for auditing repositories (including those not created from template)
 - Documentation explains how to use both automated and manual audit methods
 - Reference provided to AI prompt engineering guide
 
 **Proof Artifacts:**
 
-- File: `.github/workflows/template-audit.yml` (or similar) for CI automation
-- File: Script or prompt file for manual audits (location TBD)
-- File: AI prompt following patterns from `~/.config/ai_prompts/ai-prompt-engineering-quick-reference.md`
+- File: `.github/workflows/template-audit.yml` (or similar) with monthly schedule and workflow_dispatch
+- File: `prompts/repository-template-audit.md` - AI prompt for manual audits following prompt engineering patterns
 - Documentation: Usage guide for both audit methods
 
 ### [Unit 5]: SDD Workflow Documentation
@@ -131,25 +152,32 @@ This specification enhances the open-source template repository with essential i
 
 2. **The system shall** create a CODEOWNERS file at `.github/CODEOWNERS` with `@liatrio-labs/liatrio-labs-maintainers` as the only entry
 
-3. **The system shall** include Renovate Bot configuration file with conservative settings:
+3. **The system shall** include Renovate Bot configuration file at `.github/renovate.json` with conservative settings:
    - No automatic merging enabled
    - Pull requests created for all dependency updates
+   - Extends `config:recommended` (no organization preset exists)
    - Configuration documented with research findings comparing to other Liatrio repositories
+   - Research findings documented in `docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md`
 
 4. **The system shall** include a Cursor agent workflow file (`.github/workflows/cursor.yml`) that:
    - Follows the pattern of existing `claude.yml` and `opencode-gpt-5-codex.yml` workflows
-   - Triggers on appropriate GitHub events (issues, PRs, comments)
-   - Requires necessary permissions and secrets
+   - Triggers on `issue_comment`, `pull_request_review_comment`, `issues`, and `pull_request_review` events
+   - Uses `@cursor` trigger pattern (matches official Cursor GitHub integration)
+   - Checks comment body for `@cursor` mention and validates author association (OWNER, MEMBER, COLLABORATOR)
+   - Installs Cursor CLI via official installation script
+   - Runs `cursor-agent` command with `CURSOR_API_KEY` secret for authentication
    - Includes documentation for setup and usage
 
 5. **The system shall** provide template audit automation in two forms:
-   - Automated CI action that runs periodically and can open PRs with necessary changes
-   - Manual script/prompt for on-demand repository audits
+   - Automated CI action that runs monthly on a schedule and supports on-demand execution via `workflow_dispatch`
+   - CI audit performs comprehensive checks including both file presence and content differences
+   - Manual AI prompt for on-demand repository audits located at `prompts/repository-template-audit.md`
 
 6. **The system shall** include an AI prompt for auditing repositories that:
    - Can audit repositories created from this template
    - Can audit repositories not created from this template
    - Follows patterns from the AI prompt engineering quick reference guide
+   - Located at `prompts/repository-template-audit.md` with structured workflow phases and Chain-of-Verification
 
 7. **The system shall** include documentation in `docs/specs/README.md` explaining:
    - How specifications are created and managed
@@ -184,22 +212,30 @@ No specific design requirements identified. All components are configuration fil
 ## Technical Considerations
 
 1. **Renovate Bot Configuration Location**:
-   - Configuration file can be placed in root (`renovate.json`) or `.github/renovate.json` based on repository conventions
-   - Research needed to determine if other Liatrio repos use org-level presets that should be extended
+   - Configuration file location determined: `.github/renovate.json` (per research findings, aligns with repository structure conventions)
+   - Research completed: See `docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md`
+   - Configuration strategy: No organization-level preset exists; extend `config:recommended` with conservative overrides
+   - Conservative settings identified: `automerge: false`, rate limits, scheduling, maintainer team reviewers/assignees
 
 2. **Cursor Agent Integration**:
-   - Must research official Cursor CLI GitHub Actions documentation
-   - May require organization-level secret configuration similar to Claude and OpenCode
-   - Should follow existing workflow patterns for consistency with `claude.yml` and `opencode-gpt-5-codex.yml`
+   - Trigger pattern: `@cursor` (matches official Cursor GitHub integration pattern)
+   - Events: `issue_comment`, `pull_request_review_comment`, `issues`, `pull_request_review` (same as Claude/OpenCode)
+   - Implementation: Install Cursor CLI via curl script, run `cursor-agent` command with `CURSOR_API_KEY` secret
+   - Security: Check author association (OWNER, MEMBER, COLLABORATOR) to prevent unauthorized triggers
+   - Follows pattern of `claude.yml` and `opencode-gpt-5-codex.yml` for consistency
+   - Requires `CURSOR_API_KEY` secret (organization-level recommended)
 
 3. **Template Audit Implementation**:
-   - CI action should use GitHub Actions workflow
-   - Manual script/prompt can reference AI prompt engineering patterns
-   - May need to handle authentication for accessing downstream repositories
+   - CI action should use GitHub Actions workflow with monthly schedule and `workflow_dispatch` for on-demand execution
+   - Audit scope: Comprehensive audit checking both file presence and content differences
+   - Manual AI prompt completed: `prompts/repository-template-audit.md` following AI prompt engineering patterns
+   - Prompt includes structured workflow phases, Chain-of-Verification, and comprehensive audit coverage
+   - Prompt supports both template-derived and independent repositories
+   - CI workflow may need to handle authentication for accessing downstream repositories
    - Should be configurable to run against any repository URL
 
 4. **Secret Management**:
-   - Cursor agent may require new secret: `CURSOR_API_KEY` or similar
+   - Cursor agent requires secret: `CURSOR_API_KEY` (confirmed)
    - Documentation must explain secret setup at organization or repository level
    - Follow existing patterns from `README.md` secrets documentation
 
@@ -215,13 +251,13 @@ No specific design requirements identified. All components are configuration fil
 
 1. **Security Documentation**: SECURITY.md file exists and is accessible, providing clear vulnerability reporting path
 
-2. **Dependency Management**: Renovate Bot configuration file exists with documented conservative settings and research findings provided for review
+2. **Dependency Management**: Renovate Bot configuration file exists at `.github/renovate.json` with documented conservative settings; research findings documented in `RENOVATE-RESEARCH.md` for review
 
 3. **Code Ownership**: CODEOWNERS file exists and GitHub recognizes it (verified via test PR requiring maintainer approval)
 
 4. **AI Workflow Integration**: Cursor workflow file exists, follows established patterns, and includes complete documentation for setup and usage
 
-5. **Template Audit Capability**: Both automated (CI) and manual audit tools exist and are documented, enabling template synchronization workflows
+5. **Template Audit Capability**: Manual AI prompt exists at `prompts/repository-template-audit.md`; automated CI workflow with monthly schedule and `workflow_dispatch` support still needed; comprehensive audit scope (file presence and content differences) defined; both methods documented, enabling template synchronization workflows
 
 6. **Workflow Documentation**: SDD workflow README exists in `docs/specs/` with clear explanation and link to workflow repository
 
@@ -229,16 +265,14 @@ No specific design requirements identified. All components are configuration fil
 
 ## Open Questions
 
-1. **Renovate Configuration Research**: What configuration patterns do other top-level Liatrio repositories use for Renovate Bot? Should we extend an organization preset or use standalone configuration?
+No open questions remain. All implementation details have been determined through research and best practices.
 
-2. **Cursor Agent Trigger Pattern**: What trigger pattern should the Cursor workflow use? Should it follow exact pattern of Claude (`@claude`) and OpenCode (`/oc-codex`), or use a different trigger pattern like `@cursor`?
+**Resolved Questions:**
 
-3. **Template Audit Frequency**: How often should the automated CI template audit run? Weekly, monthly, or on-demand via workflow_dispatch?
-
-4. **Audit Scope**: What specific aspects of the template should the audit check? Should it check file presence, content differences, or both?
-
-5. **Cursor Secret Name**: What will the required secret be named for Cursor agent? Is it `CURSOR_API_KEY` or something else?
-
-6. **Renovate Config File Location**: Should Renovate configuration be in root (`renovate.json`) or `.github/renovate.json`? Are there Liatrio conventions to follow?
-
-No open questions at this time that would block specification approval, but research and clarification needed during implementation phase.
+- ✅ **Renovate Config File Location**: Determined to be `.github/renovate.json` per research findings (aligns with repository structure conventions)
+- ✅ **Renovate Organization Preset**: Confirmed that `liatrio-labs` organization does not have a Renovate preset; configuration will extend `config:recommended` directly
+- ✅ **Template Audit Manual Prompt**: Completed at `prompts/repository-template-audit.md` with comprehensive audit workflow
+- ✅ **Template Audit Frequency**: CI workflow will run monthly on a schedule and support on-demand execution via `workflow_dispatch`
+- ✅ **Template Audit Scope**: CI audit will perform comprehensive checks including both file presence and content differences
+- ✅ **Cursor Secret Name**: Confirmed to use `CURSOR_API_KEY` for authentication
+- ✅ **Cursor Agent Trigger Pattern**: Determined to use `@cursor` trigger pattern (matches official Cursor GitHub integration); workflow follows same event structure and security checks as Claude/OpenCode workflows
