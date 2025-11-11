@@ -51,16 +51,16 @@
   - [x] 3.6 Add `CURSOR_API_KEY` to "Required GitHub Secrets" section in README.md with setup instructions
   - [x] 3.7 Verify workflow YAML syntax and test workflow appears in GitHub Actions tab
 
-- [ ] 4.0 Create Template Audit CI Workflow
+- [x] 4.0 Create Template Audit CI Workflow
   - Demo Criteria: CI workflow exists with monthly schedule and `workflow_dispatch` trigger for on-demand execution; workflow invokes Cursor agent (or similar AI workflow) with the audit prompt from `prompts/repository-template-audit.md`; workflow passes target repository as input; documentation explains how to use both automated (CI workflow) and manual (AI prompt) audit methods
   - Proof Artifact(s): File: `.github/workflows/template-audit.yml` with monthly schedule and workflow_dispatch; File: `prompts/repository-template-audit.md` - AI prompt for audits (already exists); Documentation: Usage guide for both audit methods; URL: GitHub Actions tab shows template-audit workflow available
-  - [ ] 4.1 Create `.github/workflows/template-audit.yml` with monthly schedule (`schedule: cron: '0 0 1 * *'`) and `workflow_dispatch` trigger with input parameter for target repository
-  - [ ] 4.2 Add workflow step to checkout repository and read the audit prompt from `prompts/repository-template-audit.md`
-  - [ ] 4.3 Add workflow step to invoke Cursor agent (or similar AI workflow) with the audit prompt, passing target repository as argument; the prompt contains all audit logic and will perform comprehensive checks
-  - [ ] 4.4 Configure workflow to use same Cursor CLI installation and `CURSOR_API_KEY` secret as the cursor.yml workflow (or reference existing cursor workflow if possible)
-  - [ ] 4.5 Add template audit documentation section to `README.md` explaining both automated (CI workflow triggers monthly or on-demand) and manual (use AI prompt directly) audit methods, including how to trigger each
-  - [ ] 4.6 Reference existing manual prompt at `prompts/repository-template-audit.md` in documentation with instructions for manual usage
-  - [ ] 4.7 Verify workflow YAML syntax and test workflow appears in GitHub Actions tab
+  - [x] 4.1 Create `.github/workflows/template-audit.yml` with monthly schedule (`schedule: cron: '0 0 1 * *'`) and `workflow_dispatch` trigger with input parameter for target repository
+  - [x] 4.2 Add workflow step to checkout repository and read the audit prompt from `prompts/repository-template-audit.md`
+  - [x] 4.3 Add workflow step to invoke Cursor agent (or similar AI workflow) with the audit prompt, passing target repository as argument; the prompt contains all audit logic and will perform comprehensive checks
+  - [x] 4.4 Configure workflow to use same Cursor CLI installation and `CURSOR_API_KEY` secret as the cursor.yml workflow (or reference existing cursor workflow if possible)
+  - [x] 4.5 Add template audit documentation section to `README.md` explaining both automated (CI workflow triggers monthly or on-demand) and manual (use AI prompt directly) audit methods, including how to trigger each
+  - [x] 4.6 Reference existing manual prompt at `prompts/repository-template-audit.md` in documentation with instructions for manual usage
+  - [x] 4.7 Verify workflow YAML syntax and test workflow appears in GitHub Actions tab
 
 - [ ] 5.0 Create SDD Workflow Documentation
   - Demo Criteria: README.md exists in `docs/specs/` directory; README explains the SDD workflow methodology; link provided to `https://github.com/liatrio-labs/spec-driven-workflow` repository; documentation is clear and accessible

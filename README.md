@@ -182,6 +182,44 @@ For detailed configuration research and rationale, see [`docs/specs/02-spec-repo
 
 **Note:** Renovate uses a GitHub App for authentication and does not require any secrets to be configured.
 
+### Template Audit Automation
+
+**Automated Repository Auditing** helps keep downstream repositories in sync with template updates:
+
+- Monthly automated audits run on the 1st of each month
+- On-demand audits via GitHub Actions workflow dispatch
+- Comprehensive compliance checking against template standards
+- Identifies missing files, configuration drift, and compliance gaps
+
+**Automated Audit (CI Workflow):**
+
+1. **Monthly Schedule**: Runs automatically on the 1st of each month at midnight UTC
+2. **Manual Trigger**: Go to Actions → Template Audit → Run workflow
+3. **Input Parameters**:
+   - `target_repository`: Repository to audit (GitHub URL, org/repo, or local path)
+   - `template_repository`: Template baseline (defaults to `liatrio-labs/open-source-project-template`)
+
+**Manual Audit (AI Prompt):**
+
+For immediate audits or custom scenarios, use the AI prompt directly:
+
+1. Use the prompt at [`prompts/repository-template-audit.md`](prompts/repository-template-audit.md)
+2. Provide `target_repository` argument (required)
+3. Optionally provide `template_repository` argument (defaults to template)
+4. The prompt performs comprehensive file presence and content comparison audits
+
+**Audit Scope:**
+
+The audit checks:
+
+- Infrastructure files (`.pre-commit-config.yaml`, `.gitignore`, `LICENSE`)
+- GitHub configuration (`.github/CODEOWNERS`, `.github/SECURITY.md`, issue/PR templates)
+- Workflow files (CI, release, AI workflows)
+- Release configuration (Chainguard STS, semantic-release)
+- Documentation (README, CONTRIBUTING, development docs)
+
+For detailed audit methodology, see [`prompts/repository-template-audit.md`](prompts/repository-template-audit.md).
+
 ## Required GitHub Secrets
 
 The following secrets must be configured at the **organization level** (already set up for Liatrio repositories):

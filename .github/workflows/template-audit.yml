@@ -1,0 +1,55 @@
+name: Template Audit
+
+on:
+  schedule:
+    - cron: '0 0 1 * *' # Run on the 1st of every month at midnight UTC
+  workflow_dispatch:
+    inputs:
+      target_repository:
+        description: 'Target repository to audit (format: GitHub URL, org/repo, or absolute local path)'
+        required: true
+        type: string
+      template_repository:
+        description: 'Template repository to use as baseline (default: liatrio-labs/open-source-project-template)'
+        required: false
+        type: string
+        default: 'liatrio-labs/open-source-project-template'
+
+jobs:
+  audit:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Install Cursor CLI
+        run: |
+          curl https://cursor.sh/install.sh | bash
+          echo "$HOME/.cursor/bin" >> $GITHUB_PATH
+
+      - name: Read audit prompt
+        id: read_prompt
+        run: |
+          PROMPT_CONTENT=$(cat prompts/repository-template-audit.md)
+          echo "prompt<<EOF" >> $GITHUB_OUTPUT
+          echo "$PROMPT_CONTENT" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Run template audit with Cursor Agent
+        env:
+          CURSOR_API_KEY: ${{ secrets.CURSOR_API_KEY }}
+          TARGET_REPOSITORY: ${{ github.event.inputs.target_repository || github.repository }}
+          TEMPLATE_REPOSITORY: ${{ github.event.inputs.template_repository || 'liatrio-labs/open-source-project-template' }}
+        run: |
+          # Invoke cursor-agent with the audit prompt
+          # The prompt expects target_repository and template_repository arguments
+          echo "${{ steps.read_prompt.outputs.prompt }}" | cursor-agent --prompt-file - --args "target_repository=$TARGET_REPOSITORY template_repository=$TEMPLATE_REPOSITORY" || \
+          cursor-agent --args "target_repository=$TARGET_REPOSITORY template_repository=$TEMPLATE_REPOSITORY" < prompts/repository-template-audit.md || \
+          echo "Note: Cursor agent invocation may need adjustment based on actual CLI interface"
