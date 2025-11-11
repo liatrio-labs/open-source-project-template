@@ -118,16 +118,17 @@ This specification enhances the open-source template repository with essential i
 **Demo Criteria:**
 
 - CI workflow exists with monthly schedule and `workflow_dispatch` trigger for on-demand execution
-- CI audit performs comprehensive checks: file presence and content differences
+- CI workflow invokes Cursor agent (or similar AI workflow) with the audit prompt from `prompts/repository-template-audit.md`
+- Audit prompt contains all audit logic and performs comprehensive checks: file presence and content differences
 - Manual AI prompt exists for on-demand repository audits
 - AI prompt created for auditing repositories (including those not created from template)
-- Documentation explains how to use both automated and manual audit methods
+- Documentation explains how to use both automated (CI workflow) and manual (direct prompt usage) audit methods
 - Reference provided to AI prompt engineering guide
 
 **Proof Artifacts:**
 
-- File: `.github/workflows/template-audit.yml` (or similar) with monthly schedule and workflow_dispatch
-- File: `prompts/repository-template-audit.md` - AI prompt for manual audits following prompt engineering patterns
+- File: `.github/workflows/template-audit.yml` with monthly schedule and workflow_dispatch that invokes AI agent
+- File: `prompts/repository-template-audit.md` - AI prompt containing audit logic following prompt engineering patterns
 - Documentation: Usage guide for both audit methods
 
 ### [Unit 5]: SDD Workflow Documentation
@@ -170,7 +171,7 @@ This specification enhances the open-source template repository with essential i
 
 5. **The system shall** provide template audit automation in two forms:
    - Automated CI action that runs monthly on a schedule and supports on-demand execution via `workflow_dispatch`
-   - CI audit performs comprehensive checks including both file presence and content differences
+   - CI workflow invokes Cursor agent (or similar AI workflow) with the audit prompt, which performs comprehensive checks including both file presence and content differences
    - Manual AI prompt for on-demand repository audits located at `prompts/repository-template-audit.md`
 
 6. **The system shall** include an AI prompt for auditing repositories that:
@@ -227,12 +228,13 @@ No specific design requirements identified. All components are configuration fil
 
 3. **Template Audit Implementation**:
    - CI action should use GitHub Actions workflow with monthly schedule and `workflow_dispatch` for on-demand execution
-   - Audit scope: Comprehensive audit checking both file presence and content differences
+   - CI workflow invokes Cursor agent (or similar AI workflow) with the audit prompt from `prompts/repository-template-audit.md`
+   - Audit prompt contains all audit logic: comprehensive audit checking both file presence and content differences
    - Manual AI prompt completed: `prompts/repository-template-audit.md` following AI prompt engineering patterns
    - Prompt includes structured workflow phases, Chain-of-Verification, and comprehensive audit coverage
    - Prompt supports both template-derived and independent repositories
-   - CI workflow may need to handle authentication for accessing downstream repositories
-   - Should be configurable to run against any repository URL
+   - CI workflow passes target repository as argument to the AI agent; the prompt handles all audit work
+   - Should be configurable to run against any repository URL via workflow_dispatch input
 
 4. **Secret Management**:
    - Cursor agent requires secret: `CURSOR_API_KEY` (confirmed)
@@ -257,7 +259,7 @@ No specific design requirements identified. All components are configuration fil
 
 4. **AI Workflow Integration**: Cursor workflow file exists, follows established patterns, and includes complete documentation for setup and usage
 
-5. **Template Audit Capability**: Manual AI prompt exists at `prompts/repository-template-audit.md`; automated CI workflow with monthly schedule and `workflow_dispatch` support still needed; comprehensive audit scope (file presence and content differences) defined; both methods documented, enabling template synchronization workflows
+5. **Template Audit Capability**: Manual AI prompt exists at `prompts/repository-template-audit.md`; automated CI workflow with monthly schedule and `workflow_dispatch` support still needed (workflow invokes AI agent with prompt); comprehensive audit scope (file presence and content differences) defined in prompt; both methods documented, enabling template synchronization workflows
 
 6. **Workflow Documentation**: SDD workflow README exists in `docs/specs/` with clear explanation and link to workflow repository
 
