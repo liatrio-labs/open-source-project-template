@@ -1,6 +1,6 @@
 # Task List: GitHub Template Repository Extraction
 
-This task list breaks down the implementation of the specification defined in `0001-spec-github-template-extraction.md`. The goal is to extract a reusable GitHub template repository from `spec-driven-workflow` that preserves developer experience, tooling, and CI/CD automation while removing product-specific functionality.
+This task list breaks down the implementation of the specification defined in `00-spec-github-template-extraction.md`. The goal is to extract a reusable GitHub template repository from `spec-driven-workflow` that preserves developer experience, tooling, and CI/CD automation while removing product-specific functionality.
 
 ## Relevant Files
 

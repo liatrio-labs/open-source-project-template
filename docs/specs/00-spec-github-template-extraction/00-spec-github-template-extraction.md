@@ -1,6 +1,6 @@
-# Specification: GitHub Template Repository Extraction
+# 00-spec-github-template-extraction.md
 
-## 1. Introduction/Overview
+## Introduction/Overview
 
 This specification describes the creation of a GitHub template repository (`open-source-template`) derived from the `spec-driven-workflow` project. The template will preserve the opinionated developer experience, tooling, and CI/CD automation while removing product-specific functionality. This enables Liatrio teams to bootstrap new projects with battle-tested quality gates, automation, and documentation standards from day one.
 
@@ -8,7 +8,7 @@ The source repository (`spec-driven-workflow`) provides an AI-assisted spec-to-d
 
 The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Reference files in it as necessary.
 
-## 2. Goals
+## Goals
 
 1. **Extract reusable developer experience infrastructure** from `spec-driven-workflow` into a standalone GitHub template repository
 2. **Maintain all quality gates and automation** (CI/CD, pre-commit hooks, semantic-release) while removing domain-specific code
@@ -16,7 +16,7 @@ The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Refe
 4. **Enable immediate productivity** with language-agnostic workflow templates and quality automation ready to customize
 5. **Preserve AI workflow integrations** (Claude, OpenCode GPT-5 Codex) with clear setup instructions
 
-## 3. User Stories
+## User Stories
 
 ### US-1: Template Consumer (Liatrio Developer)
 
@@ -67,7 +67,7 @@ The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Refe
 - OpenCode GPT-5 Codex workflow documented and functional
 - Clear instructions for setting up required secrets
 
-## 4. Demoable Units of Work
+## Demoable Units of Work
 
 ### Slice 1: Minimal Template Repository Structure
 
@@ -154,7 +154,7 @@ The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Refe
 - Documentation checklist covering: project name update, secret configuration, license review
 - Test documentation by having non-author follow setup steps
 
-## 5. Functional Requirements
+## Functional Requirements
 
 ### FR-1: Repository Structure
 
@@ -267,7 +267,7 @@ The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Refe
 2. Include LICENSE file with copyright attribution to Liatrio
 3. Document how to change license if needed in README
 
-## 6. Non-Goals (Out of Scope)
+## Non-Goals (Out of Scope)
 
 1. **Spec-driven workflow tooling**: Remove MCP server, prompt templates, and SDD-specific features
 2. **Product-specific functionality**: No domain logic from `spec-driven-workflow`
@@ -277,7 +277,7 @@ The source repository is located at `~/Liatrio/repos/spec-driven-workflow`. Refe
 6. **Language-specific tooling**: Template should be language-agnostic; users add their preferred tech stack
 7. **External user documentation**: Tailored for Liatrio internal teams (per requirement 11a)
 
-## 7. Design Considerations
+## Design Considerations
 
 ### Repository Layout
 
@@ -319,7 +319,7 @@ open-source-template/
 - Assumes basic Git and software development knowledge (Liatrio internal teams)
 - Links to external documentation (GitHub, semantic-release) for detailed concepts
 
-## 8. Technical Considerations
+## Technical Considerations
 
 ### Core Dependencies
 
@@ -354,7 +354,7 @@ open-source-template/
 - Settings automation should be documented and optionally scripted for ease of use
 - Placeholders `{owner}` and `{repo}` in API paths get auto-replaced with current repository values
 
-## 9. Success Metrics
+## Success Metrics
 
 ### Immediate Success (Template Creation)
 
