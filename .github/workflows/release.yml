@@ -75,10 +75,10 @@ jobs:
           python-version: "3.12"
 
       - name: Install python-semantic-release
-        run: pip install python-semantic-release
+        run: pip install "python-semantic-release>=10.0.0,<11.0.0"
 
       - name: Semantic Release
-        run: semantic-release version -c .releaserc.toml
+        run: semantic-release -c .releaserc.toml version
         env:
           GH_TOKEN: ${{ steps.octo-sts.outputs.token }}
 

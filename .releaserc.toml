@@ -10,16 +10,8 @@ version_variables = []
 assets = []
 
 # Optional: Custom build command to run during versioning
-# Example for Python projects using uv:
-# build_command = """
-# apt-get update && apt-get install -y curl || true
-# curl -LsSf https://astral.sh/uv/install.sh | sh -s
-# export PATH="$HOME/.local/bin:$PATH"
-# uv sync --group packaging
-# uv lock
-# git add uv.lock
-# uv build
-# """
+# Example for Python projects:
+# build_command = "pip install build && python -m build"
 # Example for Node.js projects:
 # build_command = "npm ci && npm run build"
 # Example for Go projects:
