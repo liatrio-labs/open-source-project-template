@@ -144,11 +144,12 @@ Add language-specific hooks for your project (linting, formatting, testing) by e
 
 ### AI Workflow Integration
 
-**Claude Code** and **OpenCode** workflows enable AI-assisted development:
+**Claude Code**, **OpenCode**, and **Cursor** workflows enable AI-assisted development:
 
 - Tag `@claude` in issues or PRs to invoke Claude Code
 - Use `/oc-codex` to invoke OpenCode GPT-5 Codex
-- Both workflows require organization-level secrets (see below)
+- Tag `@cursor` in issues or PRs to invoke Cursor Agent
+- All workflows require organization-level secrets (see below)
 
 ### Automated Dependency Management
 
@@ -198,6 +199,15 @@ Required for the OpenCode GPT-5 Codex workflow (`.github/workflows/opencode-gpt-
 
 - Enables `/oc-codex` commands in issues and pull requests
 - Obtain from: [OpenAI API Keys](https://platform.openai.com/api-keys)
+
+### `CURSOR_API_KEY`
+
+Required for the Cursor Agent workflow (`.github/workflows/cursor.yml`).
+
+- Enables `@cursor` mentions in issues and pull requests
+- Obtain from: [Cursor documentation](https://cursor.sh/docs)
+- Configure at organization or repository level
+- The workflow installs Cursor CLI automatically and uses this secret for authentication
 
 ### Octo STS (Chainguard)
 

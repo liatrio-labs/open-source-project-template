@@ -40,16 +40,16 @@
   - [x] 2.3 Update "Required GitHub Secrets" section in README.md if Renovate requires any secrets (note: Renovate uses GitHub App, no secrets needed)
   - [x] 2.4 Verify JSON syntax and configuration using CLI: `cat .github/renovate.json`
 
-- [ ] 3.0 Create Cursor Agent Workflow Integration
+- [x] 3.0 Create Cursor Agent Workflow Integration
   - Demo Criteria: Workflow file `.github/workflows/cursor.yml` exists following pattern of `claude.yml` and `opencode-gpt-5-codex.yml`; workflow triggers on `issue_comment`, `pull_request_review_comment`, `issues`, and `pull_request_review` events; workflow checks for `@cursor` mention in comment body and validates author association (OWNER, MEMBER, COLLABORATOR); workflow installs Cursor CLI and runs `cursor-agent` command; documentation added explaining Cursor agent usage, secrets setup, and command triggers
   - Proof Artifact(s): File: `.github/workflows/cursor.yml` with proper configuration matching Claude/OpenCode patterns; File: Documentation section explaining Cursor agent setup and usage; URL: GitHub Actions tab shows cursor workflow available; Documentation: Guide for setting up `CURSOR_API_KEY` secret; Test: Comment `@cursor help` on a PR or issue triggers the workflow
-  - [ ] 3.1 Create `.github/workflows/cursor.yml` following the pattern of `claude.yml` and `opencode-gpt-5-codex.yml` with: same event triggers (`issue_comment`, `pull_request_review_comment`, `issues`, `pull_request_review`), `@cursor` trigger pattern check, author association validation (OWNER, MEMBER, COLLABORATOR), concurrency control, and timeout settings
-  - [ ] 3.2 Add workflow step to install Cursor CLI using official curl script: `curl https://cursor.sh/install.sh | bash` and add to PATH
-  - [ ] 3.3 Add workflow step to run `cursor-agent` command with `CURSOR_API_KEY` secret from environment variables
-  - [ ] 3.4 Configure appropriate permissions (contents: read, pull-requests: write, issues: write) for Cursor workflow
-  - [ ] 3.5 Add Cursor agent documentation section to `README.md` explaining usage (`@cursor` trigger), setup requirements, and secret configuration
-  - [ ] 3.6 Add `CURSOR_API_KEY` to "Required GitHub Secrets" section in README.md with setup instructions
-  - [ ] 3.7 Verify workflow YAML syntax and test workflow appears in GitHub Actions tab
+  - [x] 3.1 Create `.github/workflows/cursor.yml` following the pattern of `claude.yml` and `opencode-gpt-5-codex.yml` with: same event triggers (`issue_comment`, `pull_request_review_comment`, `issues`, `pull_request_review`), `@cursor` trigger pattern check, author association validation (OWNER, MEMBER, COLLABORATOR), concurrency control, and timeout settings
+  - [x] 3.2 Add workflow step to install Cursor CLI using official curl script: `curl https://cursor.sh/install.sh | bash` and add to PATH
+  - [x] 3.3 Add workflow step to run `cursor-agent` command with `CURSOR_API_KEY` secret from environment variables
+  - [x] 3.4 Configure appropriate permissions (contents: read, pull-requests: write, issues: write) for Cursor workflow
+  - [x] 3.5 Add Cursor agent documentation section to `README.md` explaining usage (`@cursor` trigger), setup requirements, and secret configuration
+  - [x] 3.6 Add `CURSOR_API_KEY` to "Required GitHub Secrets" section in README.md with setup instructions
+  - [x] 3.7 Verify workflow YAML syntax and test workflow appears in GitHub Actions tab
 
 - [ ] 4.0 Create Template Audit CI Workflow
   - Demo Criteria: CI workflow exists with monthly schedule and `workflow_dispatch` trigger for on-demand execution; workflow invokes Cursor agent (or similar AI workflow) with the audit prompt from `prompts/repository-template-audit.md`; workflow passes target repository as input; documentation explains how to use both automated (CI workflow) and manual (AI prompt) audit methods
