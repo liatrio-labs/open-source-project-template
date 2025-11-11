@@ -221,6 +221,37 @@ The audit checks:
 
 For detailed audit methodology, see [`prompts/repository-template-audit.md`](prompts/repository-template-audit.md).
 
+### Automated Dependency Management
+
+**Renovate Bot** keeps dependencies up to date with conservative, controlled updates:
+
+- Automatically creates pull requests for dependency updates
+- Conservative configuration: no auto-merge, manual review required
+- Rate-limited to prevent PR spam (`prHourlyLimit: 2`, `prConcurrentLimit: 10`)
+- Scheduled updates run before 3am on Mondays (Pacific time)
+- Dependency dashboard provides overview of all updates
+
+**Installation:**
+
+1. Install the [Renovate Bot GitHub App](https://github.com/apps/renovate)
+2. Choose "All repositories" or "Select repositories" for your organization
+3. Renovate will automatically detect the configuration file at `.github/renovate.json`
+4. An onboarding PR will be created to confirm configuration
+
+**Configuration:**
+
+The template includes a conservative Renovate configuration at `.github/renovate.json` that:
+
+- Extends `config:recommended` with conservative overrides
+- Requires manual review for all updates (no auto-merge)
+- Routes all PRs to `@liatrio-labs/liatrio-labs-maintainers` for review
+- Groups updates by type (major vs. minor/patch)
+- Limits PR creation rate to prevent overwhelming maintainers
+
+For detailed configuration research and rationale, see [`docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md`](docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md).
+
+**Note:** Renovate uses a GitHub App for authentication and does not require any secrets to be configured.
+
 ## Required GitHub Secrets
 
 The following secrets must be configured at the **organization level** (already set up for Liatrio repositories):
