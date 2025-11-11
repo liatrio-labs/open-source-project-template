@@ -24,13 +24,13 @@
 
 ## Tasks
 
-- [ ] 1.0 Create Security Documentation and Code Ownership Files
+- [x] 1.0 Create Security Documentation and Code Ownership Files
   - Demo Criteria: SECURITY.md file exists at repository root with standard GitHub Security Policy template content; `.github/CODEOWNERS` file exists with `@liatrio-labs/liatrio-labs-maintainers` team entry; both files are properly formatted and accessible
   - Proof Artifact(s): File: `SECURITY.md` in repository root; File: `.github/CODEOWNERS` with correct team reference; CLI: `cat SECURITY.md` shows vulnerability reporting template; CLI: `cat .github/CODEOWNERS` shows maintainer team entry
-  - [ ] 1.1 Create `SECURITY.md` at repository root using standard GitHub Security Policy template format with vulnerability reporting instructions
-  - [ ] 1.2 Create `.github/CODEOWNERS` file with `* @liatrio-labs/liatrio-labs-maintainers` entry following GitHub CODEOWNERS syntax
-  - [ ] 1.3 Run markdownlint on SECURITY.md to ensure proper formatting
-  - [ ] 1.4 Verify both files are accessible and properly formatted using CLI commands
+  - [x] 1.1 Create `SECURITY.md` at repository root using standard GitHub Security Policy template format with vulnerability reporting instructions
+  - [x] 1.2 Create `.github/CODEOWNERS` file with `* @liatrio-labs/liatrio-labs-maintainers` entry following GitHub CODEOWNERS syntax
+  - [x] 1.3 Run markdownlint on SECURITY.md to ensure proper formatting
+  - [x] 1.4 Verify both files are accessible and properly formatted using CLI commands
 
 - [ ] 2.0 Create Renovate Bot Configuration
   - Demo Criteria: Renovate Bot configuration file exists at `.github/renovate.json` with conservative settings (no auto-merge, PRs for all updates); configuration extends `config:recommended`; documentation added explaining Renovate setup and configuration approach
