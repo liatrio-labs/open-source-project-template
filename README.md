@@ -149,7 +149,8 @@ Add language-specific hooks for your project (linting, formatting, testing) by e
 - Tag `@claude` in issues or PRs to invoke Claude Code
 - Use `/oc-codex` to invoke OpenCode GPT-5 Codex
 - Tag `@cursor` in issues or PRs to invoke Cursor Agent
-- All workflows require organization-level secrets (see below)
+
+> Note: these workflows require organization-level secrets (see below)
 
 ### Automated Dependency Management
 
@@ -178,7 +179,7 @@ The template includes a conservative Renovate configuration at `.github/renovate
 - Groups updates by type (major vs. minor/patch)
 - Limits PR creation rate to prevent overwhelming maintainers
 
-For detailed configuration research and rationale, see [`docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md`](docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md).
+For detailed configuration research and rationale, see [docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md](docs/specs/02-spec-repository-infrastructure-improvements/RENOVATE-RESEARCH.md).
 
 **Note:** Renovate uses a GitHub App for authentication and does not require any secrets to be configured.
 
@@ -244,8 +245,6 @@ Required for the Cursor Agent workflow (`.github/workflows/cursor.yml`).
 
 - Enables `@cursor` mentions in issues and pull requests
 - Obtain from: [Cursor documentation](https://cursor.sh/docs)
-- Configure at organization or repository level
-- The workflow installs Cursor CLI automatically and uses this secret for authentication
 
 ### Octo STS (Chainguard)
 

@@ -228,6 +228,8 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 ## Required Output Structure
 
+**Output File Location:** Write the complete audit report to `audit-report.md` in the repository root directory. During CI, this file will be automatically included in the GitHub Actions job summary and made available as a workflow artifact.
+
 ```markdown
 # Repository Template Audit Report
 
