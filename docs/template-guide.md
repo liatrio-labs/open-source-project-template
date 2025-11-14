@@ -114,7 +114,7 @@ To verify Renovate Bot is installed and active:
 
 - **Using GitHub CLI:**
   - Check for Renovate-created PRs: `gh pr list --author "renovate[bot]" --limit 1`
-  - Check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+  - Check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app by app_slug: renovate
 - **Using GitHub Web UI:**
   - Go to Repository Settings → Integrations → GitHub Apps
   - Verify "Renovate" appears in the installed apps list

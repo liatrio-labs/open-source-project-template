@@ -249,7 +249,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
    - Check if Renovate Bot is installed by verifying Renovate activity:
      - Use `gh pr list --author "renovate[bot]" --limit 1` to check for Renovate-created PRs (indicates app is installed and active)
      - Or use `gh api repos/{owner}/{repo}/pulls?state=all&per_page=1` and filter for `renovate[bot]` user
-     - Alternative: Check organization installations with `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+     - Alternative: Check organization installations with `gh api orgs/{org}/installations` and filter for Renovate app by app_slug: renovate
    - If `.github/renovate.json` exists but no Renovate activity found, flag as Important Gap (app may not be installed)
    - Document installation status: Installed (verified via activity) | Not Installed (no activity found) | Cannot Verify (CLI unavailable or no activity yet)
 

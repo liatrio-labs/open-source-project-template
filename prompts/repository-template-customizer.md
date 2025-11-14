@@ -132,7 +132,7 @@ Execute actions in the following order, verifying each step before moving on:
    - **Verify Renovate Bot GitHub App Installation:**
      - If `.github/renovate.json` exists, verify Renovate Bot is installed:
        - Check for Renovate activity: `gh pr list --author "renovate[bot]" --limit 1` (indicates app is installed and active)
-       - Or check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+       - Or check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app by app_slug: renovate
        - If no activity found and app not installed, flag as blocker and provide installation instructions: Install from https://github.com/apps/renovate
      - Document installation status in customization plan
    - Present the delta to the user, confirm which settings should change, then apply updates using `gh api -X PATCH ...` (general settings) and `gh api -X PUT .../branches/{branch}/protection` or `gh ruleset create` for branch protection/rulesets.
