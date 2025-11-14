@@ -52,7 +52,7 @@ Use the `template_repository` argument (default: `liatrio-labs/open-source-proje
 
 **Workflows:** `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/claude.yml`, `.github/workflows/opencode-gpt-5-codex.yml` (if present)
 
-**Release Config:** `.github/chainguard/main-semantic-release.sts.yaml`, `.releaserc.json`
+**Release Config:** `.github/chainguard/main-semantic-release.sts.yaml`, `.releaserc.toml`
 
 **Documentation:** `README.md` (presence only, not content structure), `CONTRIBUTING.md`, `docs/development.md`, `docs/template-guide.md` (template-specific guidance - expected in template repositories, may be absent in template-derived repositories after customization), `docs/repository-settings.md` (if present)
 
