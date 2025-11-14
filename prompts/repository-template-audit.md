@@ -48,7 +48,7 @@ Use the `template_repository` argument (default: `liatrio-labs/open-source-proje
 
 **Infrastructure:** `.pre-commit-config.yaml`, `.gitignore`, `LICENSE`, `.markdownlint.yaml` (if present)
 
-**GitHub Configuration:** `.github/CODEOWNERS`, `.github/SECURITY.md` (if present), `.github/ISSUE_TEMPLATE/*.yml`, `.github/pull_request_template.md`
+**GitHub Configuration:** `.github/CODEOWNERS`, `.github/SECURITY.md` (if present), `.github/ISSUE_TEMPLATE/*.yml`, `.github/pull_request_template.md`, `.github/renovate.json`
 
 **Workflows:** `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/claude.yml`, `.github/workflows/opencode-gpt-5-codex.yml` (if present)
 
@@ -150,7 +150,14 @@ Reference `docs/repository-settings.md` in the template repository for expected 
    - Repository type (from detection above)
    - Current branch structure and recent activity
 
-**CHECKLIST:** Target repository accessed ✓ | Repository type detected ✓ | Template baseline identified ✓ | Context documented ✓ | **BLOCKING**: Confirm access and repository type before proceeding
+**CHECKLIST:**
+
+- Target repository accessed ✓
+- Repository type detected ✓
+- Template baseline identified ✓
+- Context documented ✓
+
+**BLOCKING:** Confirm access and repository type before proceeding
 
 ---
 
@@ -171,7 +178,13 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 3. Identify unexpected files in template locations or deprecated configurations
 
-**CHECKLIST:** All file categories checked ✓ | Status recorded for each file ✓ | Unexpected files identified ✓ | **BLOCKING**: Complete inventory before content analysis
+**CHECKLIST:**
+
+- All file categories checked ✓
+- Status recorded for each file ✓
+- Unexpected files identified ✓
+
+**BLOCKING:** Complete inventory before content analysis
 
 ---
 
@@ -183,7 +196,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 1. **Infrastructure Files:** Verify `.pre-commit-config.yaml` hooks (YAML, markdown, commitlint, whitespace), `.gitignore` patterns, `LICENSE` type/attribution
 
-2. **GitHub Configuration:** Verify `.github/CODEOWNERS` team assignment, `.github/SECURITY.md` template (if applicable), issue/PR template structure
+2. **GitHub Configuration:** Verify `.github/CODEOWNERS` team assignment, `.github/SECURITY.md` template (if applicable), issue/PR template structure, `.github/renovate.json` presence and configuration
 
 3. **Workflows:** Verify `ci.yml` structure/jobs/gates, `release.yml` semantic-release config, AI workflow triggers/secrets
 
@@ -204,7 +217,12 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 6. **Compliance Scoring:** Assign to each category: Fully Compliant | Partially Compliant | Non-Compliant | Not Applicable
 
-**CHECKLIST:** All categories analyzed ✓ | Compliance scores assigned ✓ | **BLOCKING**: Complete analysis before gap identification
+**CHECKLIST:**
+
+- All categories analyzed ✓
+- Compliance scores assigned ✓
+
+**BLOCKING:** Complete analysis before gap identification
 
 ---
 
@@ -227,26 +245,45 @@ Reference `docs/repository-settings.md` in the template repository for expected 
    - Or use `gh ruleset check --default` for newer rulesets
    - Extract: required reviews, status checks, conversation resolution, force push restrictions, deletion restrictions
 
-3. **Compare Against Template Baseline:**
+3. **Verify Renovate Bot GitHub App Installation** (if GitHub CLI available):
+   - Check if Renovate Bot is installed by verifying Renovate activity:
+     - Use `gh pr list --author "renovate[bot]" --limit 1` to check for Renovate-created PRs (indicates app is installed and active)
+     - Or use `gh api repos/{owner}/{repo}/pulls?state=all&per_page=1` and filter for `renovate[bot]` user
+     - Alternative: Check organization installations with `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+   - If `.github/renovate.json` exists but no Renovate activity found, flag as Important Gap (app may not be installed)
+   - Document installation status: Installed (verified via activity) | Not Installed (no activity found) | Cannot Verify (CLI unavailable or no activity yet)
+
+4. **Compare Against Template Baseline:**
    - Reference Template Settings Reference section above
    - Compare general settings against expected values
    - Compare branch protection against recommended configuration
    - Note: Branch protection may not exist in template; recommend enabling for production repos
 
-4. **Document Settings Findings:**
+5. **Document Settings Findings:**
    - Record current vs. expected state for each setting
    - Flag missing branch protection as Important Gap (not Critical, as template may not have it)
+   - Flag missing Renovate Bot installation as Important Gap if `.github/renovate.json` exists but app is not installed
    - Note settings that differ from template (may be valid customizations)
 
-5. **Compliance Scoring:** Assign to settings category: Fully Compliant | Partially Compliant | Non-Compliant | Not Applicable | Cannot Verify (no CLI access)
+6. **Compliance Scoring:** Assign to settings category: Fully Compliant | Partially Compliant | Non-Compliant | Not Applicable | Cannot Verify (no CLI access)
 
 **If GitHub CLI Unavailable:**
 
 - Note in report that settings audit was skipped
 - Provide manual verification steps using GitHub web UI
 - Reference `docs/repository-settings.md` for expected settings
+- For Renovate Bot verification: Provide manual steps to check GitHub App installation via Settings → Integrations → GitHub Apps
 
-**CHECKLIST:** Settings fetched (if CLI available) ✓ | Compared against baseline ✓ | Findings documented ✓ | Compliance scored ✓ | **BLOCKING**: Complete settings audit or note limitation before gap analysis
+**CHECKLIST:**
+
+- Settings fetched (if CLI available) ✓
+- Branch protection checked ✓
+- Renovate Bot installation verified ✓
+- Compared against baseline ✓
+- Findings documented ✓
+- Compliance scored ✓
+
+**BLOCKING:** Complete settings audit or note limitation before gap analysis
 
 ---
 
@@ -272,7 +309,14 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 4. **Estimate Effort:** Quick wins vs. larger efforts
 
-**CHECKLIST:** Findings categorized ✓ | Remediation steps generated ✓ | Dependencies identified ✓ | Effort estimated ✓ | **BLOCKING**: Complete gap analysis before report
+**CHECKLIST:**
+
+- Findings categorized ✓
+- Remediation steps generated ✓
+- Dependencies identified ✓
+- Effort estimated ✓
+
+**BLOCKING:** Complete gap analysis before report
 
 ---
 
@@ -308,7 +352,15 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 5. **Resolve Inconsistencies:** If verification fails, return to appropriate phase and fix
 
-**CHECKLIST:** Executive summary ✓ | Detailed findings ✓ | Remediation roadmap ✓ | Self-verification complete ✓ | Inconsistencies resolved ✓ | **BLOCKING**: Complete verification before output
+**CHECKLIST:**
+
+- Executive summary ✓
+- Detailed findings ✓
+- Remediation roadmap ✓
+- Self-verification complete ✓
+- Inconsistencies resolved ✓
+
+**BLOCKING:** Complete verification before output
 
 ---
 
@@ -344,7 +396,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 ## Detailed Findings
 
-### [File Category: Infrastructure Files | GitHub Configuration | Workflow Files | Release Configuration | Documentation | Repository Settings]
+### [File Category: Infrastructure Files | GitHub Configuration | Workflow Files | Release Configuration | Documentation | Repository Settings | GitHub App Installations]
 
 #### [File Path or Setting Name]
 - **Status:** [Present | Missing | Modified | Enabled | Disabled]
@@ -361,7 +413,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 [Repeat for each file/setting]
 
-**Note:** For Repository Settings category, include GitHub CLI commands for remediation (e.g., `gh api -X PATCH repos/{owner}/{repo} -F has_issues=true`)
+**Note:** For Repository Settings category, include GitHub CLI commands for remediation (e.g., `gh api -X PATCH repos/{owner}/{repo} -F has_issues=true`). For GitHub App Installations category, include installation instructions (e.g., install Renovate Bot GitHub App from https://github.com/apps/renovate)
 
 ---
 

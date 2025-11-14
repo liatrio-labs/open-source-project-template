@@ -94,6 +94,7 @@ The following secrets are configured at the Liatrio organization level:
 - [ ] Verify `CLAUDE_CODE_OAUTH_TOKEN` is available (for Claude Code workflow)
 - [ ] Verify `OPENAI_API_KEY_FOR_OPENCODE` is available (for OpenCode workflow)
 - [ ] Verify Octo STS is configured (for semantic-release workflow)
+- [ ] Verify Renovate Bot GitHub App is installed (if `.github/renovate.json` exists)
 
 See [Required GitHub Secrets](#required-github-secrets) for details.
 
@@ -171,6 +172,20 @@ Add language-specific hooks for your project (linting, formatting, testing) by e
 3. Renovate will automatically detect the configuration file at `.github/renovate.json`
 4. An onboarding PR will be created to confirm configuration
 
+**Verification:**
+
+To verify Renovate Bot is installed and active:
+
+- **Using GitHub CLI:**
+  - Check for Renovate-created PRs: `gh pr list --author "renovate[bot]" --limit 1`
+  - Check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+- **Using GitHub Web UI:**
+  - Go to Repository Settings → Integrations → GitHub Apps
+  - Verify "Renovate" appears in the installed apps list
+  - Or check for PRs created by `renovate[bot]` user
+
+**Note:** If `.github/renovate.json` exists but Renovate Bot is not installed, Renovate will not create dependency update PRs. Ensure the GitHub App is installed for Renovate to function.
+
 **Configuration:**
 
 The template includes a conservative Renovate configuration at `.github/renovate.json` that:
@@ -239,6 +254,20 @@ For detailed audit methodology, see [`prompts/repository-template-audit.md`](pro
 2. Choose "All repositories" or "Select repositories" for your organization
 3. Renovate will automatically detect the configuration file at `.github/renovate.json`
 4. An onboarding PR will be created to confirm configuration
+
+**Verification:**
+
+To verify Renovate Bot is installed and active:
+
+- **Using GitHub CLI:**
+  - Check for Renovate-created PRs: `gh pr list --author "renovate[bot]" --limit 1`
+  - Check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+- **Using GitHub Web UI:**
+  - Go to Repository Settings → Integrations → GitHub Apps
+  - Verify "Renovate" appears in the installed apps list
+  - Or check for PRs created by `renovate[bot]` user
+
+**Note:** If `.github/renovate.json` exists but Renovate Bot is not installed, Renovate will not create dependency update PRs. Ensure the GitHub App is installed for Renovate to function.
 
 **Configuration:**
 

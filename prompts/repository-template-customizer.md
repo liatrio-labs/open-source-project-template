@@ -78,7 +78,11 @@ Follow the structured workflow below. Each phase has a blocking validation gate�
 2. Capture provided arguments and infer missing context (e.g., detect default branch, existing language signals).
 3. Surface open questions (badges to keep, license changes, release timing). If answers are missing, record assumptions for verification.
 
-**Validation Gate:** Repository accessible ✓ | Inputs recorded ✓ | Open questions listed ✓
+**Validation Gate:**
+
+- Repository accessible ✓
+- Inputs recorded ✓
+- Open questions listed ✓
 
 ### Phase 1: Baseline Assessment
 
@@ -86,7 +90,11 @@ Follow the structured workflow below. Each phase has a blocking validation gate�
 2. Detect placeholder strings (e.g., `open-source-template`, `Liatrio Open Source Template`, `PROJECT_NAME`) that require replacement.
 3. Inventory automation assets: workflows, pre-commit hooks, Renovate config, release configs, AI workflows.
 
-**Validation Gate:** Repository type classified ✓ | Placeholder inventory complete ✓ | Automation inventory complete ✓
+**Validation Gate:**
+
+- Repository type classified ✓
+- Placeholder inventory complete ✓
+- Automation inventory complete ✓
 
 ### Phase 2: Customization Plan
 
@@ -94,7 +102,11 @@ Follow the structured workflow below. Each phase has a blocking validation gate�
 2. Determine stack-specific needs based on `primary_language` (e.g., add `setup-node`, `bundle install`, `go test`).
 3. Align plan with `customization_goals` (e.g., docs-first emphasizes README/CONTRIBUTING before workflows).
 
-**Validation Gate:** Prioritized action list ✓ | Stack-specific additions defined ✓ | Goals mapped ✓
+**Validation Gate:**
+
+- Prioritized action list ✓
+- Stack-specific additions defined ✓
+- Goals mapped ✓
 
 ### Phase 3: Implementation
 
@@ -114,15 +126,28 @@ Execute actions in the following order, verifying each step before moving on:
    - Update `CODE_OF_CONDUCT.md` with project-specific reporting channels, response owners, and any event-specific scope.
    - Update issue templates and PR template to mention correct project name and workflows.
    - Document AI workflow usage and required secrets in `README.md` or `docs/development.md`.
-4. **Secrets, Repository Settings, and Branch Protection**
+4. **Secrets, Repository Settings, Branch Protection, and GitHub App Installations**
    - Verify required secrets: `CLAUDE_CODE_OAUTH_TOKEN`, `OPENAI_API_KEY_FOR_OPENCODE`, `CURSOR_API_KEY`, Octo STS subject alignment.
    - Ensure `gh` CLI is available (`gh auth status`) and user has admin permissions on `target_repository`.
    - Fetch current GitHub settings via `gh api repos/{owner}/{repo}` and branch protection/rulesets via `gh api repos/{owner}/{repo}/branches/{default_branch}/protection` or `gh ruleset list --repo {owner}/{repo}`.
    - Compare settings against expectations from `docs/development.md` and `docs/repository-settings.md`, documenting every delta (issues/wiki/discussions, merge strategies, delete-branch-on-merge, required status checks, review count, force-push/deletion settings, etc.).
+   - **Verify Renovate Bot GitHub App Installation:**
+     - If `.github/renovate.json` exists, verify Renovate Bot is installed:
+       - Check for Renovate activity: `gh pr list --author "renovate[bot]" --limit 1` (indicates app is installed and active)
+       - Or check organization installations: `gh api orgs/{org}/installations` and filter for Renovate app (app_id: 2912 or app_slug: renovate)
+       - If no activity found and app not installed, flag as blocker and provide installation instructions: Install from https://github.com/apps/renovate
+     - Document installation status in customization plan
    - Present the delta to the user, confirm which settings should change, then apply updates using `gh api -X PATCH ...` (general settings) and `gh api -X PUT .../branches/{branch}/protection` or `gh ruleset create` for branch protection/rulesets.
-   - Log every command executed (or to-be-run) and note any blockers (missing permissions, CLI unavailable) so the user can remediate later.
+   - Log every command executed (or to-be-run) and note any blockers (missing permissions, CLI unavailable, missing GitHub App installations) so the user can remediate later.
 
-**Validation Gate:** Identity updates complete ✓ | Automation customized ✓ | Docs updated ✓ | Settings audit performed ✓ | User-approved changes applied/logged ✓
+**Validation Gate:**
+
+- Identity updates complete ✓
+- Automation customized ✓
+- Docs updated ✓
+- Settings audit performed ✓
+- Renovate Bot installation verified ✓
+- User-approved changes applied/logged ✓
 
 ### Phase 4: Verification & Chain-of-Verification
 
@@ -135,7 +160,11 @@ Execute actions in the following order, verifying each step before moving on:
    - **Fact-Checking:** Validate references (`docs/template-guide.md`, workflows) for accuracy.
    - **Inconsistency Resolution:** Fix mismatches before final synthesis.
 
-**Validation Gate:** Placeholder scan clean ✓ | Checklist parity confirmed ✓ | CoV complete ✓
+**Validation Gate:**
+
+- Placeholder scan clean ✓
+- Checklist parity confirmed ✓
+- CoV complete ✓
 
 ---
 
@@ -170,6 +199,7 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 | Automation | ... | .github/workflows/ci.yml |
 | Documentation | ... | docs/development.md |
 | Secrets & Settings | ... | docs/template-guide.md |
+| GitHub App Installations | ... | Renovate Bot verification |
 
 ---
 
@@ -186,6 +216,12 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 - `gh api repos/{owner}/{repo}/branches/{branch}/protection -X PUT --input branch-protection.json`
 
 Document whether commands were executed or still pending user approval.
+
+## GitHub App Installations
+
+| App | Installation Status | Verification Method | Action Required |
+| --- | --- | --- | --- |
+| Renovate Bot | ✅ Installed / ⚠️ Not Installed / ❓ Cannot Verify | `gh pr list --author "renovate[bot]"` or org installations check | Install from https://github.com/apps/renovate if not installed |
 
 ---
 
@@ -206,6 +242,7 @@ Document whether commands were executed or still pending user approval.
 - [ ] Required secrets verified/config instructions documented
 - [ ] Branch protection + status checks documented and confirmed with user
 - [ ] GitHub settings delta reviewed, approved, and commands captured
+- [ ] Renovate Bot GitHub App installation verified
 - [ ] Renovate reviewers/routes confirmed
 
 ---
@@ -238,6 +275,7 @@ Document whether commands were executed or still pending user approval.
 - Update repo settings: `gh api -X PATCH repos/{owner}/{repo} -F allow_squash_merge=true -F allow_merge_commit=false -F delete_branch_on_merge=true`
 - Inspect branch protection: `gh api repos/{owner}/{repo}/branches/{branch}/protection`
 - Manage rulesets: `gh ruleset list --repo {owner}/{repo}` / `gh ruleset create --repo {owner}/{repo} --enforcement enabled --target branch`
+- Verify Renovate Bot installation: `gh pr list --author "renovate[bot]" --limit 1` or `gh api orgs/{org}/installations` (filter for renovate app)
 
 ---
 
