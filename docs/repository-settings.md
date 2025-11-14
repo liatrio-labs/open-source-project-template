@@ -250,8 +250,6 @@ Navigate to **Settings** → **Secrets and variables** → **Actions**
 
 Required organization-level secrets (configured by Liatrio administrators):
 
-- `CLAUDE_CODE_OAUTH_TOKEN` - For Claude Code workflow
-- `OPENAI_API_KEY_FOR_OPENCODE` - For OpenCode GPT-5 Codex workflow
 - Octo STS configuration - For semantic-release workflow
 
 Repository-specific secrets (if needed):

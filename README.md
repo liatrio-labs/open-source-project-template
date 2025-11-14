@@ -11,7 +11,6 @@ This template provides Liatrio teams with a proven foundation for new projects, 
 
 - **Pre-configured CI/CD**: GitHub Actions workflows for testing, linting, and semantic versioning
 - **Quality gates**: Pre-commit hooks for YAML validation, markdown linting, and conventional commits
-- **AI integration**: Ready-to-use workflows for Claude Code and OpenCode GPT-5 Codex
 - **Automated releases**: Semantic versioning with changelog generation
 - **Documentation standards**: Contribution guidelines, issue templates, and PR templates
 
@@ -91,8 +90,6 @@ After creating your repository from this template, complete the following steps:
 
 The following secrets are configured at the Liatrio organization level:
 
-- [ ] Verify `CLAUDE_CODE_OAUTH_TOKEN` is available (for Claude Code workflow)
-- [ ] Verify `OPENAI_API_KEY_FOR_OPENCODE` is available (for OpenCode workflow)
 - [ ] Verify Octo STS is configured (for semantic-release workflow)
 - [ ] Verify Renovate Bot GitHub App is installed (if `.github/renovate.json` exists)
 
@@ -127,8 +124,6 @@ Add language-specific hooks for your project (linting, formatting, testing) by e
 
 - `ci.yml`: Runs tests and linters on every push and pull request
 - `release.yml`: Automated semantic versioning and changelog generation
-- `claude.yml`: AI-assisted code reviews and development
-- `opencode-gpt-5-codex.yml`: OpenAI Codex integration for AI assistance
 
 ### Semantic Versioning
 
@@ -144,16 +139,6 @@ Add language-specific hooks for your project (linting, formatting, testing) by e
 1. Delete existing tags: `git tag -d $(git tag -l)`
 2. Remove `CHANGELOG.md` if it exists
 3. Your first release will start at the appropriate version based on your commit types
-
-### AI Workflow Integration
-
-**Claude Code**, **OpenCode**, and **Cursor** workflows enable AI-assisted development:
-
-- Tag `@claude` in issues or PRs to invoke Claude Code
-- Use `/oc-codex` to invoke OpenCode GPT-5 Codex
-- Tag `@cursor` in issues or PRs to invoke Cursor Agent
-
-> Note: these workflows require organization-level secrets (see below)
 
 ### Automated Dependency Management
 
@@ -202,24 +187,14 @@ For detailed configuration research and rationale, see [docs/specs/02-spec-repos
 
 ### Template Audit Automation
 
-**Automated Repository Auditing** helps keep downstream repositories in sync with template updates:
+**Repository Auditing** helps keep downstream repositories in sync with template updates:
 
-- Monthly automated audits run on the 1st of each month
-- On-demand audits via GitHub Actions workflow dispatch
 - Comprehensive compliance checking against template standards
 - Identifies missing files, configuration drift, and compliance gaps
 
-**Automated Audit (CI Workflow):**
-
-1. **Monthly Schedule**: Runs automatically on the 1st of each month at midnight UTC
-2. **Manual Trigger**: Go to Actions → Template Audit → Run workflow
-3. **Input Parameters**:
-   - `target_repository`: Repository to audit (GitHub URL, org/repo, or local path)
-   - `template_repository`: Template baseline (defaults to `liatrio-labs/open-source-project-template`)
-
 **Manual Audit (AI Prompt):**
 
-For immediate audits or custom scenarios, use the AI prompt directly:
+For audits, use the AI prompt directly:
 
 1. Use the prompt at [`prompts/repository-template-audit.md`](prompts/repository-template-audit.md)
 2. Provide `target_repository` argument (required)
@@ -232,7 +207,7 @@ The audit checks:
 
 - Infrastructure files (`.pre-commit-config.yaml`, `.gitignore`, `LICENSE`)
 - GitHub configuration (`.github/CODEOWNERS`, `.github/SECURITY.md`, issue/PR templates)
-- Workflow files (CI, release, AI workflows)
+- Workflow files (CI, release)
 - Release configuration (Chainguard STS, semantic-release)
 - Documentation (README, CONTRIBUTING, development docs)
 
@@ -285,24 +260,14 @@ For detailed configuration research and rationale, see [`docs/specs/02-spec-repo
 
 ### Template Audit Automation
 
-**Automated Repository Auditing** helps keep downstream repositories in sync with template updates:
+**Repository Auditing** helps keep downstream repositories in sync with template updates:
 
-- Monthly automated audits run on the 1st of each month
-- On-demand audits via GitHub Actions workflow dispatch
 - Comprehensive compliance checking against template standards
 - Identifies missing files, configuration drift, and compliance gaps
 
-**Automated Audit (CI Workflow):**
-
-1. **Monthly Schedule**: Runs automatically on the 1st of each month at midnight UTC
-2. **Manual Trigger**: Go to Actions → Template Audit → Run workflow
-3. **Input Parameters**:
-   - `target_repository`: Repository to audit (GitHub URL, org/repo, or local path)
-   - `template_repository`: Template baseline (defaults to `liatrio-labs/open-source-project-template`)
-
 **Manual Audit (AI Prompt):**
 
-For immediate audits or custom scenarios, use the AI prompt directly:
+For audits, use the AI prompt directly:
 
 1. Use the prompt at [`prompts/repository-template-audit.md`](prompts/repository-template-audit.md)
 2. Provide `target_repository` argument (required)
@@ -315,7 +280,7 @@ The audit checks:
 
 - Infrastructure files (`.pre-commit-config.yaml`, `.gitignore`, `LICENSE`)
 - GitHub configuration (`.github/CODEOWNERS`, `.github/SECURITY.md`, issue/PR templates)
-- Workflow files (CI, release, AI workflows)
+- Workflow files (CI, release)
 - Release configuration (Chainguard STS, semantic-release)
 - Documentation (README, CONTRIBUTING, development docs)
 
@@ -324,27 +289,6 @@ For detailed audit methodology, see [`prompts/repository-template-audit.md`](pro
 ## Required GitHub Secrets
 
 The following secrets must be configured at the **organization level** (already set up for Liatrio repositories):
-
-### `CLAUDE_CODE_OAUTH_TOKEN`
-
-Required for the Claude Code workflow (`.github/workflows/claude.yml`).
-
-- Enables `@claude` mentions in issues and pull requests
-- Obtain from: [Claude Code documentation](https://docs.claude.com/en/docs/claude-code)
-
-### `OPENAI_API_KEY_FOR_OPENCODE`
-
-Required for the OpenCode GPT-5 Codex workflow (`.github/workflows/opencode-gpt-5-codex.yml`).
-
-- Enables `/oc-codex` commands in issues and pull requests
-- Obtain from: [OpenAI API Keys](https://platform.openai.com/api-keys)
-
-### `CURSOR_API_KEY`
-
-Required for the Cursor Agent workflow (`.github/workflows/cursor.yml`).
-
-- Enables `@cursor` mentions in issues and pull requests
-- Obtain from: [Cursor documentation](https://cursor.sh/docs)
 
 ### Octo STS (Chainguard)
 

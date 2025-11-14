@@ -50,7 +50,7 @@ Use the `template_repository` argument (default: `liatrio-labs/open-source-proje
 
 **GitHub Configuration:** `.github/CODEOWNERS`, `.github/SECURITY.md` (if present), `.github/ISSUE_TEMPLATE/*.yml`, `.github/pull_request_template.md`, `.github/renovate.json`
 
-**Workflows:** `.github/workflows/ci.yml`, `.github/workflows/release.yml`, `.github/workflows/claude.yml`, `.github/workflows/opencode-gpt-5-codex.yml` (if present)
+**Workflows:** `.github/workflows/ci.yml`, `.github/workflows/release.yml`
 
 **Release Config:** `.github/chainguard/main-semantic-release.sts.yaml`, `.releaserc.toml`
 
@@ -198,7 +198,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
 
 2. **GitHub Configuration:** Verify `.github/CODEOWNERS` team assignment, `.github/SECURITY.md` template (if applicable), issue/PR template structure, `.github/renovate.json` presence and configuration
 
-3. **Workflows:** Verify `ci.yml` structure/jobs/gates, `release.yml` semantic-release config, AI workflow triggers/secrets
+3. **Workflows:** Verify `ci.yml` structure/jobs/gates, `release.yml` semantic-release config
 
 4. **Release Config:** Verify Chainguard STS subject pattern, semantic-release commit rules/branches
 
