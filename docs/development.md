@@ -124,6 +124,23 @@ Create a `.env` file (ignored by git) for local development:
 - Document all required environment variables in this file
 - Provide example values in `.env.example` (committed to repo)
 
+### Secret Scanning
+
+- This repository uses **Gitleaks** (via pre-commit) to prevent credentials from being committed. Gitleaks was selected over TruffleHog and Talisman because it has a larger contributor base, frequent releases (see [Gitleaks release notes](https://github.com/gitleaks/gitleaks/releases)), and first-class pre-commit support.
+- Hooks run automatically when you execute `pre-commit install`, but you can run an ad-hoc scan with:
+
+  ```bash
+  pre-commit run gitleaks --all-files
+  ```
+
+- In CI or manual audits you can also use the standalone CLI:
+
+  ```bash
+  gitleaks detect --redact --report-format sarif --report-path reports/gitleaks.sarif
+  ```
+
+- If the hook blocks a commit, remove the offending secret, rotate the credential, and re-run the scan.
+
 ### Required Environment Variables
 
 <!-- Document your project's required environment variables here -->

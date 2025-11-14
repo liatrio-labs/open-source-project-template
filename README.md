@@ -47,6 +47,8 @@ pip install pre-commit
 pre-commit install
 ```
 
+> Secret scanning is enforced with [Gitleaks](https://github.com/gitleaks/gitleaks). If the hook blocks a commit, remove the secret, rotate the credential, and rerun `pre-commit`.
+
 ### 4. Customize for Your Project
 
 Follow the [customization checklist](#customization-checklist) below to adapt the template for your specific project.

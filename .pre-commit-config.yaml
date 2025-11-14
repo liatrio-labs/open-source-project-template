@@ -38,3 +38,11 @@ repos:
         stages: [commit-msg]
         args:
           - "--extends=@commitlint/config-conventional"
+
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.18.4
+    hooks:
+      - id: gitleaks
+        name: scan for committed secrets with gitleaks
+        args:
+          - "--redact"
