@@ -344,6 +344,7 @@ Common license resources:
 ## Documentation
 
 - [Contributing Guidelines](CONTRIBUTING.md) - Development workflow, conventional commits, and pre-commit hooks
+- [Code of Conduct](CODE_OF_CONDUCT.md) - Community expectations and reporting guidance
 - [Development Setup](docs/development.md) - Local setup, environment variables, and repository settings
 
 ## Support

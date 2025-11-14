@@ -54,7 +54,7 @@ Use the `template_repository` argument (default: `liatrio-labs/open-source-proje
 
 **Release Config:** `.github/chainguard/main-semantic-release.sts.yaml`, `.releaserc.toml`
 
-**Documentation:** `README.md` (presence only, not content structure), `CONTRIBUTING.md`, `docs/development.md`, `docs/template-guide.md` (template-specific guidance - expected in template repositories, may be absent in template-derived repositories after customization), `docs/repository-settings.md` (if present)
+**Documentation:** `README.md` (presence only, not content structure), `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `docs/development.md`, `docs/template-guide.md` (template-specific guidance - expected in template repositories, may be absent in template-derived repositories after customization), `docs/repository-settings.md` (if present)
 
 ---
 
@@ -198,6 +198,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
      - Template-derived repositories may remove the file once customization is complete—verify that template-guide content (customization checklist completion, feature enablement, secrets configuration) has been implemented even if file is absent
      - Application/independent repositories are not expected to include this file; focus on their application documentation instead
      - **Verification**: Confirm either file presence (template repos) or implemented content (template-derived repos) per type expectations
+   - **CODE_OF_CONDUCT.md**: Verify Contributor Covenant attribution remains intact, reporting instructions reference the correct maintainers/emails, and enforcement scope matches repository governance.
    - **CONTRIBUTING.md**: Verify workflow/commit standards, development workflow documentation, conventional commits guidance
    - **docs/development.md**: Verify completeness of local setup instructions, environment variables documentation, repository settings guidance
 

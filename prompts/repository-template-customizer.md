@@ -56,6 +56,7 @@ You are a **Senior DevOps Engineer and Template Onboarding Specialist** responsi
 - `docs/template-guide.md` → canonical customization checklist
 - `docs/development.md` → repository settings, developer experience requirements
 - `CONTRIBUTING.md` → commit conventions, workflow expectations
+- `CODE_OF_CONDUCT.md` → reporting expectations and enforcement contacts
 - `.github/chainguard/main-semantic-release.sts.yaml` → update `subject_pattern`
 - `.github/workflows/*.yml` → CI, release, AI workflows
 - `.pre-commit-config.yaml`, `.github/renovate.json`, `.github/CODEOWNERS`, `.github/pull_request_template.md`
@@ -110,6 +111,7 @@ Execute actions in the following order, verifying each step before moving on:
    - Review `.github/renovate.json` grouping/routing rules; update reviewers if not using `liatrio-labs-maintainers`.
 3. **Documentation & Templates**
    - Refresh `CONTRIBUTING.md`, `docs/development.md`, `docs/template-guide.md` (if retaining) with project context, setup steps, and workflow references.
+   - Update `CODE_OF_CONDUCT.md` with project-specific reporting channels, response owners, and any event-specific scope.
    - Update issue templates and PR template to mention correct project name and workflows.
    - Document AI workflow usage and required secrets in `README.md` or `docs/development.md`.
 4. **Secrets, Repository Settings, and Branch Protection**

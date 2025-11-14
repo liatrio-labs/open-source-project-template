@@ -32,6 +32,7 @@ After creating your repository from this template, complete the following steps:
 
 - [ ] Update `README.md` with project-specific information
 - [ ] Customize `CONTRIBUTING.md` with project-specific contribution guidelines
+- [ ] Update `CODE_OF_CONDUCT.md` with project-specific reporting contacts and enforcement owners
 - [ ] Review and update issue templates in `.github/ISSUE_TEMPLATE/`
 - [ ] Customize pull request template in `.github/pull_request_template.md`
 - [ ] Update `docs/development.md` with project-specific setup instructions
