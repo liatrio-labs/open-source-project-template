@@ -168,8 +168,173 @@ Execute actions in the following order, verifying each step before moving on:
    - **Compare settings against expectations** from `docs/development.md` and `docs/repository-settings.md`, documenting every delta (issues/wiki/discussions, merge strategies, delete-branch-on-merge, required status checks, review count, force-push/deletion settings, etc.).
    - **Automatically apply settings updates** when possible:
      - **If `gh` CLI is available and you have admin permissions**: Execute the `gh api` commands to update settings automatically. Do not wait for user approval - apply the changes directly.
+     - **Decision Matrix for Execute vs Document:**
+       - **gh CLI present + admin permissions → Execute automatically**: Run commands, record results, continue to next step
+       - **gh CLI absent → Document blocker**: Provide manual steps with exact commands user must run, mark as outstanding action
+       - **Template repo inaccessible → Attempt fallback method**: Try Method 2 (org installations), if that fails → document blocker with manual fallback (Method 3)
+       - **Integration ID not found after all methods → Document blocker**: Include manual fallback steps (Method 3) and note that org admins may need to install/enable integration
+       - **Org policy/manual review required → Document and await**: Mark as requiring manual approval, provide steps for user to execute after approval
+       - **Any command execution error → Document blocker**: Capture error message, provide troubleshooting steps, mark as outstanding action
      - **General settings**: Use `gh api -X PATCH repos/{owner}/{repo} -F allow_squash_merge=true -F allow_merge_commit=false -F allow_rebase_merge=false -F delete_branch_on_merge=true` etc.
-     - **Branch protection**: Use `gh api -X PUT repos/{owner}/{repo}/branches/{default_branch}/protection` with appropriate payload, or `gh ruleset create` for rulesets.
+     - **Branch protection**: Use Rulesets API to create/update branch protection rulesets:
+       - **Step 1: Create or fetch existing ruleset**:
+         - Check if ruleset exists: `gh api repos/{owner}/{repo}/rulesets -q '.[] | select(.target == "branch") | .id' | head -1`
+         - If no ruleset exists, create one using `scripts/ruleset-config.json` as a template:
+           - **Validate ruleset-config.json exists and is valid JSON**:
+             - Check if file exists: `test -f scripts/ruleset-config.json`
+             - Validate JSON syntax: `cat scripts/ruleset-config.json | jq . > /dev/null` (capture exit code)
+             - If file missing or invalid: Document as blocker with error message explaining expected structure
+           - **Required fields in ruleset-config.json**:
+             - `name` (string): Ruleset name, e.g., "main branch protection"
+             - `target` (string): Must be "branch" for branch protection
+             - `enforcement` (string): "active", "disabled", or "evaluate"
+             - `conditions` (object): Branch targeting, e.g., `{"ref_name": {"include": ["~DEFAULT_BRANCH"], "exclude": []}}`
+             - `rules` (array): Array of rule objects (deletion, non_fast_forward, pull_request, required_status_checks, required_linear_history)
+             - `bypass_actors` (array, optional): Array of bypass actor objects (can be added in Step 2)
+           - **Minimal example structure**:
+
+              ```json
+              {
+                "name": "main branch protection",
+                "target": "branch",
+                "enforcement": "active",
+                "conditions": {
+                  "ref_name": {
+                    "include": ["~DEFAULT_BRANCH"],
+                    "exclude": []
+                  }
+                },
+                "rules": [
+                  {"type": "deletion"},
+                  {"type": "non_fast_forward"},
+                  {"type": "pull_request", "parameters": {...}},
+                  {"type": "required_status_checks", "parameters": {...}},
+                  {"type": "required_linear_history"}
+                ]
+              }
+             ```
+
+           - Copy validated JSON to temp file: `cp scripts/ruleset-config.json /tmp/ruleset.json` (or create from template if file missing)
+           - Create ruleset: `gh api repos/{owner}/{repo}/rulesets -X POST --input /tmp/ruleset.json` (validate JSON before calling to make GitHub errors easier to interpret)
+         - If ruleset exists, retrieve its ID for updating
+       - **Step 2: Add bypass actors** (required for proper CI/CD functionality):
+         - **Standard bypass actors** (always add):
+           - Admin role: `actor_id: 2, actor_type: "RepositoryRole", bypass_mode: "always"`
+           - Maintain role: `actor_id: 5, actor_type: "RepositoryRole", bypass_mode: "always"`
+         - **Integration bypass actor** (add if semantic-release workflow exists):
+           - Check if `.github/workflows/release.yml` exists
+           - If it exists, find Chainguard Octo STS integration ID using one of these methods:
+             - **Method 1 (preferred)**: Check template repository's ruleset bypass actors:
+               - Execute: `TEMPLATE_REPO="liatrio-labs/open-source-project-template"` (or use provided template_repository if available)
+               - Execute: `RULESET_ID=$(gh api repos/$TEMPLATE_REPO/rulesets -q '.[] | select(.target == "branch") | .id' | head -1)`
+               - Execute: `INTEGRATION_ID=$(gh api repos/$TEMPLATE_REPO/rulesets/$RULESET_ID -q '.bypass_actors[] | select(.actor_type == "Integration") | .actor_id')`
+             - **Method 2 (fallback)**: Check organization installations:
+               - Execute: `INTEGRATION_ID=$(gh api orgs/{org}/installations -q '.[] | select(.app_slug == "octo-sts") | .id')`
+             - **Method 3 (manual fallback)**: If both automated methods fail, provide manual steps:
+               - Instruct user to visit: `https://github.com/organizations/{org}/settings/installations`
+               - Locate "Chainguard Octo STS" (or "Octo STS") in the GitHub App installations list
+               - Record the numeric App/Integration ID displayed in the UI (typically shown in the URL or app details)
+               - Use this ID as `INTEGRATION_ID` for Step 3
+               - **If app not found**: Document as blocker with note that org admins must install/enable the Chainguard Octo STS integration before continuing. Provide installation link: https://github.com/apps/octo-sts
+           - **Validate INTEGRATION_ID**: After attempting all methods, check if `INTEGRATION_ID` is set and non-empty:
+             - If `INTEGRATION_ID` is empty or unset after all methods: Document as blocker with Method 3 manual steps and org admin contact note
+             - If `INTEGRATION_ID` is found: Proceed to Step 3 with the integration bypass actor
+           - Add integration bypass actor: `actor_id: <INTEGRATION_ID>, actor_type: "Integration", bypass_mode: "always"` (only if INTEGRATION_ID is successfully found)
+         - **Step 3: Update ruleset with bypass actors**:
+           - **Step 3a: Retrieve and validate current ruleset**:
+             - Retrieve current ruleset: `gh api repos/{owner}/{repo}/rulesets/{ruleset_id} > /tmp/ruleset_current.json`
+             - Validate JSON response: `cat /tmp/ruleset_current.json | jq . > /dev/null` (capture exit code, fail fast if invalid)
+             - If retrieval fails or JSON invalid: Document as blocker with error message and troubleshooting steps
+           - **Step 3b: Build bypass_actors array conditionally**:
+             - **Step-by-step behavior of jq pipeline**:
+               - `del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links)`: Removes read-only fields that cannot be modified in PUT request
+               - `.bypass_actors = [...]`: Replaces or sets the bypass_actors array with the new configuration
+             - **Build bypass_actors array programmatically** (only include integration if INTEGRATION_ID is set and non-empty):
+
+                ```bash
+                # Start with standard bypass actors (always included)
+                BYPASS_ACTORS='[{"actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always"}, {"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"}'
+
+                # Conditionally add integration bypass actor
+                if [ -n "$INTEGRATION_ID" ] && [ "$INTEGRATION_ID" != "" ]; then
+                  BYPASS_ACTORS="${BYPASS_ACTORS}, {\"actor_id\": ${INTEGRATION_ID}, \"actor_type\": \"Integration\", \"bypass_mode\": \"always\"}"
+                fi
+
+                BYPASS_ACTORS="${BYPASS_ACTORS}]"
+                ```
+
+             - **Create updated ruleset JSON with conditional bypass actors**:
+
+                ```bash
+                # Validate INTEGRATION_ID environment variable presence
+                if [ -z "$INTEGRATION_ID" ]; then
+                  echo "Warning: INTEGRATION_ID not set, skipping integration bypass actor"
+                fi
+
+                # Execute jq pipeline with error handling
+                gh api repos/{owner}/{repo}/rulesets/{ruleset_id} | \
+                  jq --argjson bypass_actors "$(echo "$BYPASS_ACTORS" | jq .)" \
+                      'del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links) |
+                      .bypass_actors = $bypass_actors' > /tmp/ruleset_with_bypass.json
+
+                # Capture jq exit status and validate output
+                JQ_EXIT_CODE=$?
+                if [ $JQ_EXIT_CODE -ne 0 ]; then
+                  echo "Error: jq pipeline failed with exit code $JQ_EXIT_CODE"
+                  # Log jq error output for debugging
+                  exit 1
+                fi
+
+                # Validate output JSON
+                cat /tmp/ruleset_with_bypass.json | jq . > /dev/null
+                if [ $? -ne 0 ]; then
+                  echo "Error: Generated JSON is invalid"
+                  exit 1
+                fi
+                ```
+
+             - **Alternative simpler approach** (if shell variable passing is complex):
+
+               ```bash
+               # Build bypass actors array conditionally using jq
+               if [ -n "$INTEGRATION_ID" ] && [ "$INTEGRATION_ID" != "" ]; then
+                 # Include integration bypass actor
+                 gh api repos/{owner}/{repo}/rulesets/{ruleset_id} | \
+                   jq 'del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links) |
+                       .bypass_actors = [
+                         {"actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always"},
+                         {"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"},
+                         {"actor_id": '${INTEGRATION_ID}', "actor_type": "Integration", "bypass_mode": "always"}
+                       ]' > /tmp/ruleset_with_bypass.json
+               else
+                 # Only standard bypass actors
+                 gh api repos/{owner}/{repo}/rulesets/{ruleset_id} | \
+                   jq 'del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links) |
+                       .bypass_actors = [
+                         {"actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always"},
+                         {"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"}
+                       ]' > /tmp/ruleset_with_bypass.json
+               fi
+
+               # Capture and check exit codes
+               JQ_EXIT_CODE=$?
+               if [ $JQ_EXIT_CODE -ne 0 ]; then
+                 echo "Error: jq pipeline failed"
+                 exit 1
+               fi
+
+               # Validate output JSON
+               cat /tmp/ruleset_with_bypass.json | jq . > /dev/null || {
+                 echo "Error: Generated JSON is invalid"
+                 exit 1
+               }
+               ```
+
+           - **Step 3c: Update ruleset**:
+             - Update ruleset: `gh api repos/{owner}/{repo}/rulesets/{ruleset_id} -X PUT --input /tmp/ruleset_with_bypass.json`
+             - Capture exit code and validate response
+             - If update fails: Document as blocker with error message and troubleshooting steps
+         - **Document any blockers**: If template repo is not accessible, integration ID cannot be found, or update fails, document as an outstanding action with manual steps
      - **Only document as manual steps** if: CLI is unavailable, permissions are insufficient, or settings require manual review due to organization policies.
      - **Report any errors** encountered to the user.
    - **Verify Renovate Bot GitHub App Installation:**
@@ -262,13 +427,14 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 | Setting / Rule | Current Value | Expected Value | Status | Action / Command |
 | --- | --- | --- | --- | --- |
 | has_issues | true | true | ✅ | `gh api -X PATCH ...` |
-| Branch protection (main) | ... | ... | ⚠️ | `gh api repos/{repo}/branches/main/protection -X PUT -F ...` |
+| Branch protection (main) | ... | ... | ⚠️ | `gh api repos/{repo}/rulesets -X POST --input ruleset.json` or `gh api repos/{repo}/rulesets/{id} -X PUT --input ruleset.json` |
 
 **Commands Executed / Planned**
 - `gh auth status` - [EXECUTED / SKIPPED: reason]
 - `gh api repos/{owner}/{repo}` - [EXECUTED / SKIPPED: reason]
 - `gh api -X PATCH repos/{owner}/{repo} -F allow_squash_merge=true -F allow_merge_commit=false` - [EXECUTED / SKIPPED: reason]
-- `gh api repos/{owner}/{repo}/branches/{branch}/protection -X PUT --input branch-protection.json` - [EXECUTED / SKIPPED: reason]
+- `gh api repos/{owner}/{repo}/rulesets -X POST --input /tmp/ruleset.json` - [EXECUTED / SKIPPED: reason]
+- `gh api repos/{owner}/{repo}/rulesets/{ruleset_id} -X PUT --input /tmp/ruleset_with_bypass.json` - [EXECUTED / SKIPPED: reason]
 
 **Important**: Commands should be **EXECUTED automatically** when `gh` CLI is available and permissions allow. Only mark as SKIPPED if CLI is unavailable, permissions are insufficient, or organization policies require manual review. Do not wait for user approval - execute the commands directly and document the results.
 
@@ -352,8 +518,11 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 - **Verify SECURITY.md URLs**: `rg -n "open-source-project-template.*security/advisories" .github/SECURITY.md` (should return nothing if file exists and URLs are updated)
 - Check GitHub settings: `gh api repos/{owner}/{repo}`
 - Update repo settings: `gh api -X PATCH repos/{owner}/{repo} -F allow_squash_merge=true -F allow_merge_commit=false -F delete_branch_on_merge=true`
-- Inspect branch protection: `gh api repos/{owner}/{repo}/branches/{branch}/protection`
 - Manage rulesets: `gh ruleset list --repo {owner}/{repo}` / `gh ruleset create --repo {owner}/{repo} --enforcement enabled --target branch`
+- Inspect rulesets: `gh api repos/{owner}/{repo}/rulesets -q '.[] | select(.target == "branch") | {id, name, enforcement, bypass_actors}'`
+- Find integration ID from template repo: `RULESET_ID=$(gh api repos/{template_repo}/rulesets -q '.[] | select(.target == "branch") | .id' | head -1)` then `gh api repos/{template_repo}/rulesets/$RULESET_ID -q '.bypass_actors[] | select(.actor_type == "Integration") | .actor_id'`
+- Find integration ID from org: `gh api orgs/{org}/installations -q '.[] | select(.app_slug == "octo-sts") | .id'`
+- Update ruleset with bypass actors: `gh api repos/{owner}/{repo}/rulesets/{ruleset_id} | jq 'del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links) | .bypass_actors = [...]' > /tmp/ruleset_with_bypass.json` then `gh api repos/{owner}/{repo}/rulesets/{ruleset_id} -X PUT --input /tmp/ruleset_with_bypass.json`
 - Verify Renovate Bot installation: `gh pr list --author "renovate[bot]" --limit 1` or `gh api orgs/{org}/installations` (filter for renovate app)
 
 ---

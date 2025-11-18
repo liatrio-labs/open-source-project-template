@@ -83,9 +83,9 @@ The script uses `scripts/ruleset-config.json` for the Rulesets API configuration
 - Required approvals: 1 minimum
 - Required linear history
 - Squash merge only
-- Bypass actors: Admins and Maintainers
+- Bypass actors: Admins and Maintainers (and Chainguard Octo STS integration if using semantic-release)
 
-**Note:** If using semantic-release, you'll need to manually add Chainguard Octo STS integration to the bypass list via GitHub UI (see [Manual Configuration](#using-rulesets-api-recommended) section).
+**Note:** If using semantic-release, you'll need to add Chainguard Octo STS integration to the bypass list. This can be done programmatically (see [Programmatic Bypass Actor Setup](#programmatic-bypass-actor-setup) below) or manually via GitHub UI (see [Manual Configuration](#using-rulesets-api-recommended) section).
 
 **Manual API approach** (if you prefer not to use the script):
 
@@ -296,8 +296,75 @@ The following actors should be configured to bypass branch protection rules:
 - **Repository Maintainers**: Can bypass all rules (standard GitHub role ID: 5)
 - **Chainguard Octo STS Integration**: Can bypass rules for semantic-release automation
   - **Why**: Allows semantic-release workflow to push version bumps and CHANGELOG updates
-  - **How to add**: Via GitHub UI - search for "Chainguard Octo-sts" in the bypass list (see [Manual Configuration](#using-rulesets-api-recommended) section above for detailed steps)
   - **Required if**: Using semantic-release workflow (`.github/workflows/release.yml`)
+  - **How to add**:
+    - **Programmatic approach** (recommended): See [Programmatic Bypass Actor Setup](#programmatic-bypass-actor-setup) section below
+    - **Manual approach**: Via GitHub UI - search for "Chainguard Octo-sts" in the bypass list (see [Manual Configuration](#using-rulesets-api-recommended) section above for detailed steps)
+
+##### Programmatic Bypass Actor Setup
+
+When creating or updating branch protection rulesets programmatically, you can add bypass actors using the GitHub API. The process involves:
+
+1. **Creating the initial ruleset** (if it doesn't exist) using `scripts/ruleset-config.json` as a template
+2. **Finding the integration ID** for Chainguard Octo STS (if needed)
+3. **Updating the ruleset** with bypass actors
+
+**Standard Bypass Actors:**
+
+These are standard GitHub role IDs that should always be included:
+
+- Admin role: `actor_id: 2, actor_type: "RepositoryRole", bypass_mode: "always"`
+- Maintain role: `actor_id: 5, actor_type: "RepositoryRole", bypass_mode: "always"`
+
+**Finding Integration ID:**
+
+Integration IDs are repository-specific. Use one of these methods to find the Chainguard Octo STS integration ID:
+
+**Method 1: Check Template Repository's Ruleset** (preferred if template repository is accessible):
+
+```bash
+# Set template repository (adjust if using a different template)
+TEMPLATE_REPO="liatrio-labs/open-source-project-template"
+
+# Get the branch protection ruleset ID from the template
+RULESET_ID=$(gh api repos/$TEMPLATE_REPO/rulesets -q '.[] | select(.target == "branch") | .id' | head -1)
+
+# Extract the integration ID from the ruleset's bypass actors
+INTEGRATION_ID=$(gh api repos/$TEMPLATE_REPO/rulesets/$RULESET_ID -q '.bypass_actors[] | select(.actor_type == "Integration") | .actor_id')
+```
+
+**Method 2: Check Organization Installations** (fallback method):
+
+```bash
+# Replace {org} with your organization name
+INTEGRATION_ID=$(gh api orgs/{org}/installations -q '.[] | select(.app_slug == "octo-sts") | .id')
+```
+
+**Updating Ruleset with Bypass Actors:**
+
+Once you have the integration ID (or if you're only adding standard roles), update the ruleset:
+
+```bash
+# Replace {owner}, {repo}, and {ruleset_id} with your values
+# Replace {INTEGRATION_ID} with the ID found above (or omit integration bypass actor if not using semantic-release)
+
+gh api repos/{owner}/{repo}/rulesets/{ruleset_id} | \
+  jq 'del(.id, .node_id, .created_at, .updated_at, .source, .source_type, .current_user_can_bypass, ._links) |
+      .bypass_actors = [
+        {"actor_id": 2, "actor_type": "RepositoryRole", "bypass_mode": "always"},
+        {"actor_id": 5, "actor_type": "RepositoryRole", "bypass_mode": "always"},
+        {"actor_id": <INTEGRATION_ID>, "actor_type": "Integration", "bypass_mode": "always"}
+      ]' > /tmp/ruleset_with_bypass.json
+
+# Update the ruleset
+gh api repos/{owner}/{repo}/rulesets/{ruleset_id} -X PUT --input /tmp/ruleset_with_bypass.json
+```
+
+**Note:** Only include the integration bypass actor if you're using semantic-release (`.github/workflows/release.yml` exists) and successfully found the integration ID.
+
+**Automated Setup:**
+
+For automated setup during repository customization, use the [repository template customizer prompt](../prompts/repository-template-customizer.md), which handles bypass actor configuration automatically.
 
 ### Testing Branch Protection
 

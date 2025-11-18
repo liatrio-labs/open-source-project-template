@@ -98,10 +98,11 @@ See [Required GitHub Secrets](#required-github-secrets) for details.
 
 - [ ] Enable branch protection for `main` branch
 - [ ] Configure required status checks (CI workflows)
+- [ ] Configure bypass actors (Admins, Maintainers, and Chainguard Octo STS integration if using semantic-release)
 - [ ] Set up CODEOWNERS file if needed
 - [ ] Review repository settings (Issues, Wikis, Discussions, etc.)
 
-See [docs/development.md](development.md) for recommended repository settings.
+See [docs/development.md](development.md) for recommended repository settings. For programmatic setup of bypass actors (including integration IDs), see [docs/repository-settings.md](repository-settings.md#programmatic-bypass-actor-setup) or use the [repository template customizer prompt](../prompts/repository-template-customizer.md) for automated configuration.
 
 ### Post-Customization Verification
 
