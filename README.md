@@ -18,7 +18,17 @@ This template provides Liatrio teams with a proven foundation for new projects, 
 
 Choose one of two paths to get started:
 
-### Option A: Automated Setup (Recommended)
+### Option A: AI-Powered Automated Setup (Recommended)
+
+The template automation system uses AI-driven prompts to chain together the initializer, customizer, audit, and CI/release workflows, transforming a generic template into a production-ready project:
+
+```mermaid
+flowchart LR
+    U[User runs initializer prompt] --> P[Initializer clones template repo]
+    P --> C[Customizer prompt configures project]
+    C --> A[User runs audit prompt to verify setup]
+    A --> D[CI & releases keep repo healthy]
+```
 
 Run this command in your AI assistant to automate the entire process, from repository creation to customization:
 
@@ -39,6 +49,40 @@ The initializer will:
 - `local_parent_folder`: Local directory path where the repo should be cloned
 - `primary_language` (optional): Your primary language/framework
 - `additional_details` (optional): Any extra customization requirements
+
+After the customization is complete, run the validation prompt to ensure that the repository meets the expectations from the template.
+
+#### Detailed Overview
+
+The sequence diagram below shows the detailed interactions between each automation component, including the prompts, GitHub CLI operations, and CI/release pipeline.
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Init as Initializer Prompt
+    participant Repo as GitHub Repo
+    participant Cust as Customizer Prompt
+    participant Settings as Repo Settings CLI
+    participant Audit as Audit Prompt
+    participant CI as CI Workflow
+    participant Release as Semantic Release
+    participant Renovate
+
+    User->>Init: Run repository-initializer.md
+    Init->>Repo: gh repo create from template (1a)
+    Repo-->>User: New repo created
+    Init->>Repo: Clone locally (1b)
+    Init->>Cust: Execute repository-template-customizer.md (1c)
+    Cust->>Cust: Phase 1-2 intake & planning
+    Cust->>Cust: Phase 3 implementation
+    Cust->>Settings: Apply rulesets & settings (2d)
+    Cust->>Cust: Phase 4 verification & CoV
+    Cust->>Audit: Run repository-template-audit prompt
+    Audit->>CI: Validate CI/pre-commit expectations
+    CI->>Release: Trigger release workflow after CI success
+    Release->>Repo: Version bump + changelog (Chainguard STS auth)
+    Repo-->>Renovate: Monitor dependencies via Renovate bot
+```
 
 ### Option B: Manual Setup
 
