@@ -16,6 +16,18 @@ This template provides Liatrio teams with a proven foundation for new projects, 
 
 ## Quick Start
 
+**Prerequisites:** The prompts require the GitHub CLI (`gh`) to be installed and authenticated. Ensure you have:
+
+- GitHub CLI installed ([installation guide](https://cli.github.com/manual/installation))
+- GitHub CLI authenticated: `gh auth login`
+- Admin permissions on the repository you're working with (for repository settings and ruleset management)
+
+Verify your setup:
+
+```bash
+gh auth status
+```
+
 Choose one of two paths to get started:
 
 ### Option A: AI-Powered Automated Setup (Recommended)
