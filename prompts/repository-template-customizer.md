@@ -146,7 +146,7 @@ Execute actions in the following order, verifying each step before moving on:
      - Remove or update `docs/template-guide.md` - either delete it entirely or replace with project-specific setup documentation
      - **Update README.md links**: If deleting `docs/template-guide.md`, remove or update all references to it in README.md (check for links in both the main content and documentation sections)
      - Remove any references to "Liatrio Open Source Template" or template-specific instructions from README
-     - **Remove `CHANGELOG.md`** (if present) - semantic-release will generate a new changelog based on the project's commits, so the template's example changelog should be removed
+     - **Remove `CHANGELOG.md`** - semantic-release will generate a new changelog based on the project's commits, so the template's example `CHANGELOG.md` MUST be removed to prevent conflicts with Semantic Release automation
      - **Remove or update `docs/repository-settings.md`** - this file contains template-specific repository settings guidance and should be cleaned up after customization (either removed entirely or updated with project-specific settings documentation)
      - Clean up any template-specific documentation that doesn't apply to the application repository
 4. **Pre-commit Setup & Validation**
@@ -462,7 +462,7 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 - [ ] README, CONTRIBUTING, docs updated with project context
 - [ ] `docs/development.md` updated: repository URLs replaced, template-specific sections removed, language-specific content filled in, placeholder examples for other languages removed
 - [ ] `CONTRIBUTING.md` updated: repository references replaced, language-specific examples updated, placeholder examples for other languages removed
-- [ ] `CHANGELOG.md` removed (if present) - semantic-release will generate a new one
+- [ ] **CRITICAL: Original `CHANGELOG.md` removed** - semantic-release will generate a new one; failure to remove this file will cause Semantic Release conflicts
 - [ ] `docs/repository-settings.md` removed or updated - template-specific settings guidance cleaned up
 - [ ] Pre-commit installed (if not already present)
 - [ ] Pre-commit hooks installed: `pre-commit install`
@@ -505,6 +505,7 @@ Write the final plan to `customization-plan.md` at the repository root so it can
 ## Quick Reference Commands
 
 - Search for placeholders: `rg -n "open-source-template|PROJECT_NAME|Liatrio Open Source Template"`
+- **CRITICAL: Remove CHANGELOG.md**: `rm CHANGELOG.md` - semantic-release will generate a new one; this step is essential for Semantic Release to work correctly
 - **Install pre-commit** (if needed): `brew install pre-commit` (macOS) or `sudo apt install pre-commit` (Ubuntu/Debian) or `pip install pre-commit` (all platforms)
 - **Install pre-commit hooks**: `pre-commit install`
 - **Run pre-commit hooks**: `pre-commit run --all-files` (run until all hooks pass)
