@@ -232,7 +232,7 @@ Reference `docs/repository-settings.md` in the template repository for expected 
    - **CHANGELOG.md**:
      - Template repositories: File should be present (example changelog)
      - Template-derived repositories: File should be absent (removed during customization; semantic-release generates a new one based on project commits)
-     - If present in template-derived repository, flag as Enhancement (should be removed)
+     - If present in template-derived repository and does not reflect project-specific commits, flag as Important Gap (should be removed - breaks Semantic Release automation)
    - **docs/repository-settings.md**:
      - Template repositories: File should be present (template-specific settings guidance)
      - Template-derived repositories: File should be absent or updated (removed or updated during customization as it contains template-specific guidance)
@@ -365,7 +365,8 @@ Reference `docs/repository-settings.md` in the template repository for expected 
      - All repositories must maintain infrastructure and GitHub configuration files (`.pre-commit-config.yaml`, `.gitignore`, `LICENSE`, `.github/CODEOWNERS`, etc.)
    - **Verification**: Cross-reference each finding against repository type expectations before finalizing severity
    - **Do NOT flag as gaps**: Missing `CHANGELOG.md` or `docs/repository-settings.md` in template-derived repositories (these are expected to be removed/cleaned up during customization)
-   - **Flag as Enhancement**: `CHANGELOG.md` or `docs/repository-settings.md` present in template-derived repositories with template-specific content (should be removed or updated)
+   - **Flag as Important Gap**: `CHANGELOG.md` present in template-derived repositories with template-specific content (should be removed - breaks Semantic Release automation)
+   - **Flag as Enhancement**: `docs/repository-settings.md` present in template-derived repositories with template-specific content (should be removed or updated)
    - **Flag as Important Gap**: `.github/SECURITY.md` present but contains template repository URL in Private Vulnerability Reporting link (should reference the actual repository, not the template)
 
 2. **Generate Remediation Steps** for each gap:
